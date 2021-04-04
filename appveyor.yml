@@ -1,0 +1,19 @@
+image:
+- Ubuntu1604
+- Visual Studio 2015
+
+install:
+- ps: >-
+    .\CI\02_Install.ps1
+build_script:
+- ps: >-
+    write-host "Skipping build"
+test_script:
+- ps: >-
+    .\CI\04_Tests.ps1
+
+skip_commits:
+  files:
+    - docs/*
+    - README.MD
+    - mkdocs.yml
