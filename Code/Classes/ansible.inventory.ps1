@@ -224,6 +224,14 @@ Class AnsibleInventory {
         $this.GroupCollection.AddGrouping($Grouping)
     }
 
+    AddVariable([object]$Variable){
+        #Will change to AnsibleInventoryItem once class is there.
+        Foreach($var in $Variable){
+            $this.VariableCollection.AddVariable($Variable)
+        }
+        
+    }
+
     [Object]GetGroups() {
 
         return $this.Groups

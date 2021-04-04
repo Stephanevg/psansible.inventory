@@ -1,4 +1,4 @@
-#Generated at 04/02/2021 08:46:42 by Stephane van Gulick
+#Generated at 04/04/2021 09:58:39 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -546,6 +546,14 @@ Class AnsibleInventory {
 
     AddGrouping([AnsibleInventoryGrouping]$Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
+    }
+
+    AddVariable([object]$Variable){
+        #Will change to AnsibleInventoryItem once class is there.
+        Foreach($var in $Variable){
+            $this.VariableCollection.AddVariable($Variable)
+        }
+        
     }
 
     [Object]GetGroups() {
