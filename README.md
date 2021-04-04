@@ -5,7 +5,7 @@ Ansible inventory helpers
 
 __psansible.inventory__ simplifies the management of __static__ inventories by allowing the automation of every component that an inventory is composed of.
 
-__psansible.inventory__ allows to work with objects rather than with plain text / regexe's, and enable's complexe scenarios around the automation of ansible inventories.
+__psansible.inventory__ allows to work with objects rather than with plain text / regexe's, and enable's complex scenarios around the automation of ansible inventories.
 
 
 Currently, the following scenarios are supported:
