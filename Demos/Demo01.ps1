@@ -3,28 +3,36 @@
 
 import-module psansible.inventory
 
+
+# Creating a new inventory
+
+$Inventory = New-AnsibleInventory
+$Inventory
+
 #Creating Hiearchy
 
 $Arch = @()
 
-$Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_managed_windows" -Children "managedsql","managedWINSRV2012R2STD","ManagedWINSRV2016STD","ManagedWINSRV2019STD","sap"
+$Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_prod_servers" -Children "all_hr_servers","all_marketing_servers","all_database_servers"
+$Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_database_servers" -Children "all_mongodb_servers","all_postgres_servers"
+$Arch
 
-
-
-
+$Inventory.AddHiearchy($Arch)
 
 <#
     Working with Variables
 #>
 
+$vars = @()
+$vars += New-AnsibleInventoryVariable -Name "plop" -Type Group -Value "WWW" -ContainerName "ABC"
+$vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "server123"
+$vars
 
-New-AnsibleInventoryVariable -Name "plop" -Type Group -Value "WWW" -ContainerName "ABC"
+#Adding a variable to an PsAnsibleInventory
 
-$AllVariables += $HostVariables
+$Inventory.AddVariable($vars) 
 
-#Grouping individual variables in a Variable Collection
-
-$VariableCollection = New-AnsibleInventoryVariableCollection -Variables $AllVariables 
+$Inventory
 
 
 #Fetching variabl
