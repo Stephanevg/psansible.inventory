@@ -54,7 +54,7 @@ $Inventory.SetVariableCollection($VariableCollection)
 
 #Exporting the data
 $Inventory.SetPath('./Inventories/Windows/')
-#$Inventory.SetPath("D:\Code\esc-ans-win-inv-dev-test\")
+
 $Inventory.Export()
 
 
