@@ -1,4 +1,4 @@
-#Generated at 04/04/2021 09:58:39 by Stephane van Gulick
+#Generated at 07/23/2021 10:28:03 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -825,7 +825,7 @@ Function Import-AnsibleInventory {
 
     REturn $Inv
 }
-Function Import-AnsibleHiearchy {
+Function Import-AnsibleInventoryHiearchy {
     [CmdletBinding()]
     Param(
 

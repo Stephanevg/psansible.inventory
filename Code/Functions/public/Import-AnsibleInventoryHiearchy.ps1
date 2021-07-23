@@ -1,4 +1,4 @@
-Function Import-AnsibleHiearchy {
+Function Import-AnsibleInventoryHiearchy {
     [CmdletBinding()]
     Param(
 
