@@ -220,7 +220,7 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    AddGrouping([AnsibleInventoryGrouping]$Grouping) {
+    AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
 
