@@ -42,7 +42,10 @@ Class AnsibleInventoryEntryCollection {
     AnsibleInventoryEntryCollection() {}
 
     AnsibleInventoryEntryCollection([AnsibleInventoryEntry[]]$Entry) {
-        $this.Entries.Add($Entry)
+        Foreach($e in $Entry){
+
+            $this.Entries.Add($e)
+        }
     }
 
     AddEntry($Entry) {
