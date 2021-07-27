@@ -53,7 +53,7 @@ Class AnsibleVariableCollection {
         $this.SetVariables($Variables)
     }
 
-    AddVariable([AnsibleVar]$Variable) {
+    AddVariable([AnsibleVar[]]$Variable) {
         $this.Variables += $Variable
     }
 

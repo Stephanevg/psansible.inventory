@@ -189,7 +189,7 @@ Class AnsibleInventory {
     AnsibleInventory($Entries, $Hiearchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy += $Hiearchy
+        $this.Hiearchy.AddEntry($Hiearchy)
 
     }
 

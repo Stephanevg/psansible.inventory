@@ -1,4 +1,14 @@
-. D:\Code\psansible.inventory\Code\Classes\ansible.variables.ps1
+
+$TestsPath = Split-Path $MyInvocation.MyCommand.Path
+
+$RootFolder = (get-item $TestsPath).Parent
+
+$path = Join-Path -Path $RootFolder.FullName -ChildPath 'Code/Classes'
+
+
+Push-Location -Path $Path
+
+. .\ansible.variables.ps1
 
 $FakeInventory = @"
 [webservers]
@@ -254,19 +264,18 @@ Describe '[AnsibleVariableCollection]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleVariableCollection] --> SetPath($Path) :  - should return type []' {
+    It '[AnsibleVariableCollection] --> SetPath($Path) :  - should return void' {
 
         # -- Arrange
-     
+        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
 
-        [System.Io.DirectoryInfo]$Path = $InventoryFolder
 
         # -- Act
 
         $Instance = [AnsibleVariableCollection]::New()
         # -- Assert
 
-        $Instance.SetPath($Path) | should be $Null
+        $Instance.SetPath($InventoryFolder) | should be $Null
 
     } #End It Block
 
@@ -274,14 +283,23 @@ Describe '[AnsibleVariableCollection]-[Methods]' {
     It '[AnsibleVariableCollection] --> Export() :  - should Not Throw' {
 
         # -- Arrange
-
+        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        $Variables = @()
+        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
         # -- Act
 
         $Instance = [AnsibleVariableCollection]::New()
-
+        $Instance.SetVariables($Variables)
+        $Instance.SetPath($InventoryFolder)
         # -- Assert
 
-        { $Instance.Export() } | Should Not Throw
+        { 
+            $Instance.Export() 
+        } | Should Not Throw
+
+        #TODO
+            #Add tests to validate the contents that gets created
 
     } #End It Block
 
@@ -289,10 +307,16 @@ Describe '[AnsibleVariableCollection]-[Methods]' {
     It '[AnsibleVariableCollection] --> Export() :  - should be void' {
 
         # -- Arrange
-
+        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        $Variables = @()
+        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
         # -- Act
 
         $Instance = [AnsibleVariableCollection]::New()
+        $Instance.SetVariables($Variables)
+        $Instance.SetPath($InventoryFolder)
+
         # -- Assert
 
         $Instance.Export() | should be $null
@@ -457,9 +481,6 @@ Describe '[AnsibleVariableCollection]-[Methods]' {
         $Instance = [AnsibleVariableCollection]::New()
         $Instance.AddVariable($vars)
 
-        # -- Act
-
-        $Instance = [AnsibleVariableCollection]::New()
         # -- Assert
 
         ($Instance.GetVariableFromContainer($ContainerName)).GetType().Name | should be AnsibleVar[]

@@ -63,7 +63,9 @@ Describe '[AnsibleInventory]-[Constructors]' {
         # -- Assert
 
         { 
-            [AnsibleInventory]::New($p) 
+            $Instance = [AnsibleInventory]::New()
+            $Instance.SetPath($InventoryFile)
+             
         } | Should Not Throw 
 
     }# end of it block
@@ -96,7 +98,7 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        $Hiearchy = ''
+        $Hiearchy = [AnsibleInventoryHiearchyEntry]::New("Parent","Child")
 
         # -- Act
 
@@ -109,7 +111,7 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should return type []' {
+    It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should return type void' {
 
         # -- Arrange
         $Hiearchy = ''
@@ -119,7 +121,7 @@ Describe '[AnsibleInventory]-[Methods]' {
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.AddHiearchy($Hiearchy)).GetType().Name | should be 
+        $Instance.AddHiearchy($Hiearchy) | should be $null
 
     } #End It Block
 
@@ -128,7 +130,10 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        [AnsibleInventoryEntry[]]$Entries = ''
+        
+
+
+        [AnsibleInventoryEntry[]]$Entries = 'Plop'
 
         # -- Act
 
@@ -141,17 +146,17 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should return type []' {
+    It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should return type void' {
 
         # -- Arrange
-        [AnsibleInventoryEntry[]]$Entries = ''
+        [AnsibleInventoryEntry[]]$Entries = 'plop'
 
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.AddInventoryEntry($Entries)).GetType().Name | should be 
+        $Instance.AddInventoryEntry($Entries) | should be $null
 
     } #End It Block
 
@@ -189,7 +194,9 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        [AnsibleInventoryGrouping]$Grouping = ''
+        
+
+        [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1","server1")
 
         # -- Act
 
@@ -202,17 +209,17 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should return type []' {
+    It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should return void' {
 
         # -- Arrange
-        [AnsibleInventoryGrouping]$Grouping = ''
+        [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1","server1")
 
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.AddGrouping($Grouping)).GetType().Name | should be 
+        $Instance.AddGrouping($Grouping) | should be $null
 
     } #End It Block
 
@@ -221,7 +228,7 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        [object]$Variable = ''
+        $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
 
         # -- Act
 
@@ -234,17 +241,17 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> AddVariable($Variable) :  - should return type []' {
+    It '[AnsibleInventory] --> AddVariable($Variable) :  - should return void' {
 
         # -- Arrange
-        [object]$Variable = ''
+        $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
 
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.AddVariable($Variable)).GetType().Name | should be 
+        $Instance.AddVariable($Variable) | should be $null
 
     } #End It Block
 
@@ -268,9 +275,21 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
+
+        
+        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        New-Item -ItemType Directory -Path $InventoryFolder -ErrorAction SilentlyContinue
+
+        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+
+
+
         # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+        $Instance = [AnsibleInventory]::New($InventoryFolder)
+        $Instance.SetPath($InventoryFolder)
+        $Instance.CreateGroupings()
         # -- Assert
 
         ($Instance.GetGroups()).GetType().Name | should be Object
@@ -340,9 +359,12 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        [AnsibleVariableCollection]$VariableCollection = ''
+        $vars = @()
+        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
 
-        # -- Act
+        $VariableCollection = [AnsibleVariableCollection]::New($vars)
 
         $Instance = [AnsibleInventory]::New()
 
@@ -353,17 +375,22 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should return type []' {
+    It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should return type void' {
 
         # -- Arrange
-        [AnsibleVariableCollection]$VariableCollection = ''
+        $vars = @()
+        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+
+        $VariableCollection = [AnsibleVariableCollection]::New($vars)
 
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.SetVariableCollection($VariableCollection)).GetType().Name | should be 
+        $Instance.SetVariableCollection($VariableCollection) | should be $null
 
     } #End It Block
 
@@ -385,7 +412,7 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should return type []' {
+    It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should return void' {
 
         # -- Arrange
         [AnsibleInventoryGroupingCollection]$GroupingCollection = ''
@@ -395,7 +422,7 @@ Describe '[AnsibleInventory]-[Methods]' {
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.SetGroupingCollection($GroupingCollection)).GetType().Name | should be 
+        $Instance.SetGroupingCollection($GroupingCollection) | should be $Null
 
     } #End It Block
 
@@ -404,15 +431,21 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        [System.IO.DirectoryInfo]$Path = ''
+        
+
+        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+
+        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
         # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+        $Instance = [AnsibleInventory]::New($InventoryFolder)
 
         # -- Assert
 
-        { $Instance.SetPath($Path) } | Should Not Throw
+        { $Instance.SetPath($InventoryFolder) } | Should Not Throw
 
     } #End It Block
 
@@ -420,14 +453,18 @@ Describe '[AnsibleInventory]-[Methods]' {
     It '[AnsibleInventory] --> SetPath($Path) :  - should return type []' {
 
         # -- Arrange
-        [System.IO.DirectoryInfo]$Path = ''
+        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+
+        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.SetPath($Path)).GetType().Name | should be 
+        $Instance.SetPath($Path) | should be $Null
 
     } #End It Block
 
@@ -436,9 +473,18 @@ Describe '[AnsibleInventory]-[Methods]' {
 
         # -- Arrange
 
-        # -- Act
+        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'InventoryTest'
+        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+
+        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
         $Instance = [AnsibleInventory]::New()
+        $entry = [AnsibleInventoryEntry]::New("Node1","plop")
+        $Instance.AddInventoryEntry($entry)
+        $Instance.SetPath($InventoryFolder)
+        # -- Act
+
 
         # -- Assert
 
@@ -454,9 +500,12 @@ Describe '[AnsibleInventory]-[Methods]' {
         # -- Act
 
         $Instance = [AnsibleInventory]::New()
+        $entry = [AnsibleInventoryEntry]::New("Node1","plop")
+        $Instance.AddInventoryEntry($entry)
+
         # -- Assert
 
-        ($Instance.Export()).GetType().Name | should be 
+        $Instance.Export() | should be $null
 
     } #End It Block
 
@@ -505,7 +554,10 @@ Describe '[AnsibleInventory]-[Methods]' {
     } #End It Block
 
     #Public Method
-    It '[AnsibleInventory] --> CreateGroupings() :  - should return type []' {
+    It '[AnsibleInventory] --> CreateGroupings() :  - should return void' {
+
+        #TODO
+            #Add test were we actually test if the grouping gets created...
 
         # -- Arrange
 
@@ -514,7 +566,7 @@ Describe '[AnsibleInventory]-[Methods]' {
         $Instance = [AnsibleInventory]::New()
         # -- Assert
 
-        ($Instance.CreateGroupings()).GetType().Name | should be 
+        ($Instance.CreateGroupings()).GetType().Name | should be $null
 
     } #End It Block
 
