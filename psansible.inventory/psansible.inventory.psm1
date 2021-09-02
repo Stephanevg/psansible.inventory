@@ -1,4 +1,4 @@
-#Generated at 07/23/2021 10:28:03 by Stephane van Gulick
+#Generated at 08/02/2021 15:19:42 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -43,7 +43,10 @@ Class AnsibleInventoryEntryCollection {
     AnsibleInventoryEntryCollection() {}
 
     AnsibleInventoryEntryCollection([AnsibleInventoryEntry[]]$Entry) {
-        $this.Entries.Add($Entry)
+        Foreach($e in $Entry){
+
+            $this.Entries.Add($e)
+        }
     }
 
     AddEntry($Entry) {
@@ -513,7 +516,7 @@ Class AnsibleInventory {
     AnsibleInventory($Entries, $Hiearchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy += $Hiearchy
+        $this.Hiearchy.AddEntry($Hiearchy)
 
     }
 
@@ -544,7 +547,7 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    AddGrouping([AnsibleInventoryGrouping]$Grouping) {
+    AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
 
@@ -685,7 +688,7 @@ Class AnsibleVariableCollection {
         $this.SetVariables($Variables)
     }
 
-    AddVariable([AnsibleVar]$Variable) {
+    AddVariable([AnsibleVar[]]$Variable) {
         $this.Variables += $Variable
     }
 
@@ -792,7 +795,7 @@ Class AnsibleVariableCollection {
     }
 
     [AnsibleVar[]]GetGroupVariables() {
-        $AllGroupVariables = @()
+        $AllGroupVariables = [AnsibleVar[]]@()
         $AllGroupVariables = $This.Variables | ? { $_.VarType -eq 'Group' }
         Return $AllGroupVariables
     }
