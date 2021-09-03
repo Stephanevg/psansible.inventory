@@ -6,8 +6,6 @@ Class AnsibleInventoryEntry {
     $GroupMemberShip = [System.Collections.Generic.List[string]]::new()
     
 
-    #stage_tenantName_OS-Category_BusingessGroup_NodeName
-
     AnsibleInventoryEntry() {}
 
     AnsibleInventoryEntry([String]$NodeName) {

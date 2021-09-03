@@ -1,4 +1,4 @@
-#Generated at 09/02/2021 13:57:50 by Stephane van Gulick
+#Generated at 09/03/2021 13:09:05 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -6,8 +6,6 @@ Class AnsibleInventoryEntry {
     [String]$NodeName
     $GroupMemberShip = [System.Collections.Generic.List[string]]::new()
     
-
-    #stage_tenantName_OS-Category_BusingessGroup_NodeName
 
     AnsibleInventoryEntry() {}
 
