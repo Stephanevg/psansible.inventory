@@ -1,4 +1,4 @@
-#Generated at 08/02/2021 15:19:42 by Stephane van Gulick
+#Generated at 09/02/2021 13:57:50 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -38,15 +38,14 @@ Class AnsibleInventoryEntry {
 
 Class AnsibleInventoryEntryCollection {
     
-    $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
+    [System.Collections.Generic.List[AnsibleInventoryEntry]] $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
 
     AnsibleInventoryEntryCollection() {}
 
     AnsibleInventoryEntryCollection([AnsibleInventoryEntry[]]$Entry) {
-        Foreach($e in $Entry){
 
-            $this.Entries.Add($e)
-        }
+            $this.AddEntry($Entry)
+
     }
 
     AddEntry($Entry) {
