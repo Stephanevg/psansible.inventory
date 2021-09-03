@@ -4,217 +4,223 @@ $TestsPath = Split-Path $MyInvocation.MyCommand.Path
 
 $RootFolder = (get-item $TestsPath).Parent
 
-$path = Join-Path -Path $RootFolder.FullName -ChildPath 'Code/Classes'
+$path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 
 Push-Location -Path $Path
 
-. .\ansible.grouping.ps1
+ipmo psansible.inventory.psm1 -Force
+
 
 #endregion Header
-Describe '[AnsibleInventoryGrouping]-[Constructors]' {
 
-    It '[AnsibleInventoryGrouping]-[Constructor] - Parameterless should Not Throw' {
+InModuleScope -ModuleName psansible.inventory -ScriptBlock {
 
-        # -- Arrange
 
-        # -- Act
+    Describe '[AnsibleInventoryGrouping]-[Constructors]' {
 
-        # -- Assert
+        It '[AnsibleInventoryGrouping]-[Constructor] - Parameterless should Not Throw' {
 
-        { [AnsibleInventoryGrouping]::New() } | Should Not Throw 
+            # -- Arrange
 
-    }# end of it block
+            # -- Act
 
+            # -- Assert
 
-    It '[AnsibleInventoryGrouping]-[Constructor]([string]Name) should Not Throw' {
+            { [AnsibleInventoryGrouping]::New() } | Should Not Throw 
 
-        # -- Arrange
+        }# end of it block
 
 
-        [string]$Name = ''
+        It '[AnsibleInventoryGrouping]-[Constructor]([string]Name) should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        # -- Assert
 
-        { [AnsibleInventoryGrouping]::New($Name) } | Should Not Throw 
+            [string]$Name = ''
 
-    }# end of it block
+            # -- Act
 
+            # -- Assert
 
-    It '[AnsibleInventoryGrouping]-[Constructor]([String]Name,[Array]Members) should Not Throw' {
+            { [AnsibleInventoryGrouping]::New($Name) } | Should Not Throw 
 
-        # -- Arrange
+        }# end of it block
 
 
-        [String]$Name = ''
+        It '[AnsibleInventoryGrouping]-[Constructor]([String]Name,[Array]Members) should Not Throw' {
 
+            # -- Arrange
 
-        [Array]$Members = ''
 
-        # -- Act
+            [String]$Name = ''
 
-        # -- Assert
 
-        { [AnsibleInventoryGrouping]::New($Name, $Members) } | Should Not Throw 
+            [Array]$Members = ''
 
-    }# end of it block
+            # -- Act
 
+            # -- Assert
 
-}# end of Describe block
-Describe '[AnsibleInventoryGroupingCollection]-[Constructors]' {
+            { [AnsibleInventoryGrouping]::New($Name, $Members) } | Should Not Throw 
 
-    It '[AnsibleInventoryGroupingCollection]-[Constructor] - Parameterless should Not Throw' {
+        }# end of it block
 
-        # -- Arrange
 
-        # -- Act
+    }# end of Describe block
+    Describe '[AnsibleInventoryGroupingCollection]-[Constructors]' {
 
-        # -- Assert
+        It '[AnsibleInventoryGroupingCollection]-[Constructor] - Parameterless should Not Throw' {
 
-        { [AnsibleInventoryGroupingCollection]::New() } | Should Not Throw 
+            # -- Arrange
 
-    }# end of it block
+            # -- Act
 
+            # -- Assert
 
-    It '[AnsibleInventoryGroupingCollection]-[Constructor](Groups) should Not Throw' {
+            { [AnsibleInventoryGroupingCollection]::New() } | Should Not Throw 
 
-        # -- Arrange
+        }# end of it block
 
 
-        $Groups = 'GroupA'
+        It '[AnsibleInventoryGroupingCollection]-[Constructor](Groups) should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        # -- Assert
 
-        { [AnsibleInventoryGroupingCollection]::New($Groups) } | Should Not Throw 
+            $Groups = 'GroupA'
 
-    }# end of it block
+            # -- Act
 
+            # -- Assert
 
-}# end of Describe block
-Describe '[AnsibleInventoryGroupingCollection]-[Methods]' {
+            { [AnsibleInventoryGroupingCollection]::New($Groups) } | Should Not Throw 
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> AddGrouping($Grouping) :  - should Not Throw' {
+        }# end of it block
 
-        # -- Arrange
 
-        $Grouping = 'Woopa'
+    }# end of Describe block
+    Describe '[AnsibleInventoryGroupingCollection]-[Methods]' {
 
-        # -- Act
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> AddGrouping($Grouping) :  - should Not Throw' {
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
+            # -- Arrange
 
-        # -- Assert
+            $Grouping = 'Woopa'
 
-        { $Instance.AddGrouping($Grouping) } | Should Not Throw
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> AddGrouping($Grouping) :  - should return void' {
+            # -- Assert
 
-        # -- Arrange
-        $Grouping = 'Test'
+            { $Instance.AddGrouping($Grouping) } | Should Not Throw
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
-        # -- Assert
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> AddGrouping($Grouping) :  - should return void' {
 
-        $Instance.AddGrouping($Grouping) | should be $null
+            # -- Arrange
+            $Grouping = 'Test'
 
-    } #End It Block
+            # -- Act
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> GetGroupNames() : [String] - should Not Throw' {
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
+            # -- Assert
 
-        # -- Arrange
+            $Instance.AddGrouping($Grouping) | should be $null
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> GetGroupNames() : [String] - should Not Throw' {
 
-        # -- Assert
+            # -- Arrange
 
-        { $Instance.GetGroupNames() } | Should Not Throw
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> GetGroupNames() : [String] - should return type [String]' {
+            # -- Assert
 
-        # -- Arrange
+            { $Instance.GetGroupNames() } | Should Not Throw
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
-        # -- Assert
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> GetGroupNames() : [String] - should return type [String]' {
 
-        ($Instance.GetGroupNames()).GetType().Name | should be String
+            # -- Arrange
 
-    } #End It Block
+            # -- Act
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> ToString() : [String] - should Not Throw' {
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
+            # -- Assert
 
-        # -- Arrange
+            ($Instance.GetGroupNames()).GetType().Name | should be String
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> ToString() : [String] - should Not Throw' {
 
-        # -- Assert
+            # -- Arrange
 
-        { $Instance.ToString() } | Should Not Throw
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> ToString() : [String] - should return type [String]' {
+            # -- Assert
 
-        # -- Arrange
+            { $Instance.ToString() } | Should Not Throw
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
-        # -- Assert
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> ToString() : [String] - should return type [String]' {
 
-        ($Instance.ToString()).GetType().Name | should be String
+            # -- Arrange
 
-    } #End It Block
+            # -- Act
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> ConvertToIni() : [string] - should Not Throw' {
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
+            # -- Assert
 
-        # -- Arrange
+            ($Instance.ToString()).GetType().Name | should be String
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> ConvertToIni() : [string] - should Not Throw' {
 
-        # -- Assert
+            # -- Arrange
 
-        { $Instance.ConvertToIni() } | Should Not Throw
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
 
-    #Public Method
-    It '[AnsibleInventoryGroupingCollection] --> ConvertToIni() : [string] - should return type [string]' {
+            # -- Assert
 
-        # -- Arrange
+            { $Instance.ConvertToIni() } | Should Not Throw
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventoryGroupingCollection]::New()
-        # -- Assert
+        #Public Method
+        It '[AnsibleInventoryGroupingCollection] --> ConvertToIni() : [string] - should return type [string]' {
 
-        ($Instance.ConvertToIni()).GetType().Name | should be string
+            # -- Arrange
 
-    } #End It Block
+            # -- Act
 
-}#EndDescribeBlock
+            $Instance = [AnsibleInventoryGroupingCollection]::New()
+            # -- Assert
 
+            ($Instance.ConvertToIni()).GetType().Name | should be string
+
+        } #End It Block
+
+    }#EndDescribeBlock
+
+}

@@ -5,22 +5,20 @@ $TestsPath = Split-Path $MyInvocation.MyCommand.Path
 
 $RootFolder = (get-item $TestsPath).Parent
 
-$path = Join-Path -Path $RootFolder.FullName -ChildPath 'Code/Classes'
+$path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 
 Push-Location -Path $Path
 
-. .\ansible.grouping.ps1
-. .\ansible.entry.ps1
-. .\ansible.hiearchy.ps1
-. .\ansible.inventory.ps1
-. .\ansible.variables.ps1
-
+ipmo psansible.inventory.psm1 -Force
 
 
 #endregion Header
 
-$FakeInventory = @"
+InModuleScope -ModuleName psansible.inventory -ScriptBlock {
+
+
+    $FakeInventory = @"
 [webservers]
 foo.example.com
 bar.example.com
@@ -31,544 +29,548 @@ two.example.com
 three.example.com
 "@
 
-Describe '[AnsibleInventory]-[Constructors]' {
+    Describe '[AnsibleInventory]-[Constructors]' {
 
-    It '[AnsibleInventory]-[Constructor] - Parameterless should Not Throw' {
+        It '[AnsibleInventory]-[Constructor] - Parameterless should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        # -- Assert
+            # -- Assert
 
-        { [AnsibleInventory]::New() } | Should Not Throw 
+            { [AnsibleInventory]::New() } | Should Not Throw 
 
-    }# end of it block
+        }# end of it block
 
 
-    It '[AnsibleInventory]-[Constructor]([System.IO.DirectoryInfo]p) should Not Throw' {
+        It '[AnsibleInventory]-[Constructor]([System.IO.DirectoryInfo]p) should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        New-Item -ItemType Directory -Path $InventoryFolder
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            New-Item -ItemType Directory -Path $InventoryFolder
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
-        [System.IO.DirectoryInfo]$p = $InventoryFile
+            [System.IO.DirectoryInfo]$p = $InventoryFile
 
-        # -- Act
+            # -- Act
 
-        # -- Assert
+            # -- Assert
 
-        { 
-            $Instance = [AnsibleInventory]::New()
-            $Instance.SetPath($InventoryFile)
+            { 
+                $Instance = [AnsibleInventory]::New()
+                $Instance.SetPath($InventoryFile)
              
-        } | Should Not Throw 
+            } | Should Not Throw 
 
-    }# end of it block
-
-
-    It '[AnsibleInventory]-[Constructor](Entries,Hiearchy) should Not Throw' {
-
-        # -- Arrange
+        }# end of it block
 
 
-        $Entries = ''
+        It '[AnsibleInventory]-[Constructor](Entries,Hiearchy) should Not Throw' {
+
+            # -- Arrange
 
 
-        $Hiearchy = ''
-
-        # -- Act
-
-        # -- Assert
-
-        { [AnsibleInventory]::New($Entries, $Hiearchy) } | Should Not Throw 
-
-    }# end of it block
+            $Entries = ''
 
 
-}# end of Describe block
-Describe '[AnsibleInventory]-[Methods]' {
+            $Hiearchy = ''
 
-    #Public Method
-    It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should Not Throw' {
+            # -- Act
 
-        # -- Arrange
+            # -- Assert
 
-        $Hiearchy = [AnsibleInventoryHiearchyEntry]::New("Parent","Child")
+            { 
+                [AnsibleInventory]::New($Entries, $Hiearchy) 
+            } | Should Not Throw 
 
-        # -- Act
-
-        $Instance = [AnsibleInventory]::New()
-
-        # -- Assert
-
-        { $Instance.AddHiearchy($Hiearchy) } | Should Not Throw
-
-    } #End It Block
-
-    #Public Method
-    It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should return type void' {
-
-        # -- Arrange
-        $Hiearchy = ''
-
-        # -- Act
-
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
-
-        $Instance.AddHiearchy($Hiearchy) | should be $null
-
-    } #End It Block
-
-    #Public Method
-    It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should Not Throw' {
-
-        # -- Arrange
-
-        
+        }# end of it block
 
 
-        [AnsibleInventoryEntry[]]$Entries = 'Plop'
+    }# end of Describe block
+    Describe '[AnsibleInventory]-[Methods]' {
 
-        # -- Act
+        #Public Method
+        It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should Not Throw' {
 
-        $Instance = [AnsibleInventory]::New()
+            # -- Arrange
 
-        # -- Assert
+            $Hiearchy = [AnsibleInventoryHiearchyEntry]::New("Parent", "Child")
 
-        { $Instance.AddInventoryEntry($Entries) } | Should Not Throw
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleInventory]::New()
 
-    #Public Method
-    It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should return type void' {
+            # -- Assert
 
-        # -- Arrange
-        [AnsibleInventoryEntry[]]$Entries = 'plop'
+            { $Instance.AddHiearchy($Hiearchy) } | Should Not Throw
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+        #Public Method
+        It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should return type void' {
 
-        $Instance.AddInventoryEntry($Entries) | should be $null
+            # -- Arrange
+            $Hiearchy = ''
 
-    } #End It Block
+            # -- Act
 
-    #Public Method
-    It '[AnsibleInventory] --> ConvertArchToInI() : [String] - should Not Throw' {
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        # -- Arrange
+            $Instance.AddHiearchy($Hiearchy) | should be $null
 
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleInventory]::New()
+        #Public Method
+        It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should Not Throw' {
 
-        # -- Assert
-
-        { $Instance.ConvertArchToInI() } | Should Not Throw
-
-    } #End It Block
-
-    #Public Method
-    It '[AnsibleInventory] --> ConvertArchToInI() : [String] - should return type [String]' {
-
-        # -- Arrange
-
-        # -- Act
-
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
-
-        ($Instance.ConvertArchToInI()).GetType().Name | should be String
-
-    } #End It Block
-
-    #Public Method
-    It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should Not Throw' {
-
-        # -- Arrange
+            # -- Arrange
 
         
 
-        [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1","server1")
 
-        # -- Act
+            [AnsibleInventoryEntry[]]$Entries = 'Plop'
 
-        $Instance = [AnsibleInventory]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
 
-        { $Instance.AddGrouping($Grouping) } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.AddInventoryEntry($Entries) } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should return void' {
+        } #End It Block
 
-        # -- Arrange
-        [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1","server1")
+        #Public Method
+        It '[AnsibleInventory] --> AddInventoryEntry($Entries) :  - should return type void' {
 
-        # -- Act
+            # -- Arrange
+            [AnsibleInventoryEntry[]]$Entries = 'plop'
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            # -- Act
 
-        $Instance.AddGrouping($Grouping) | should be $null
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-    } #End It Block
+            $Instance.AddInventoryEntry($Entries) | should be $null
 
-    #Public Method
-    It '[AnsibleInventory] --> AddVariable($Variable) :  - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleInventory] --> ConvertArchToInI() : [String] - should Not Throw' {
 
-        $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.AddVariable($Variable) } | Should Not Throw
+            { $Instance.ConvertArchToInI() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> AddVariable($Variable) :  - should return void' {
+        #Public Method
+        It '[AnsibleInventory] --> ConvertArchToInI() : [String] - should return type [String]' {
 
-        # -- Arrange
-        $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        $Instance.AddVariable($Variable) | should be $null
+            ($Instance.ConvertArchToInI()).GetType().Name | should be String
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> GetGroups() : [Object] - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+        
 
-        $Instance = [AnsibleInventory]::New()
+            [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1", "server1")
 
-        # -- Assert
+            # -- Act
 
-        { $Instance.GetGroups() } | Should Not Throw
+            $Instance = [AnsibleInventory]::New()
 
-    } #End It Block
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [Object]' {
+            { $Instance.AddGrouping($Grouping) } | Should Not Throw
 
-        # -- Arrange
+        } #End It Block
+
+        #Public Method
+        It '[AnsibleInventory] --> AddGrouping($Grouping) :  - should return void' {
+
+            # -- Arrange
+            [AnsibleInventoryGrouping]$Grouping = [AnsibleInventoryGrouping]::new("group1", "server1")
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
+
+            $Instance.AddGrouping($Grouping) | should be $null
+
+        } #End It Block
+
+        #Public Method
+        It '[AnsibleInventory] --> AddVariable($Variable) :  - should Not Throw' {
+
+            # -- Arrange
+
+            $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+
+            # -- Assert
+
+            { $Instance.AddVariable($Variable) } | Should Not Throw
+
+        } #End It Block
+
+        #Public Method
+        It '[AnsibleInventory] --> AddVariable($Variable) :  - should return void' {
+
+            # -- Arrange
+            $Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
+
+            $Instance.AddVariable($Variable) | should be $null
+
+        } #End It Block
+
+        #Public Method
+        It '[AnsibleInventory] --> GetGroups() : [Object] - should Not Throw' {
+
+            # -- Arrange
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+
+            # -- Assert
+
+            { $Instance.GetGroups() } | Should Not Throw
+
+        } #End It Block
+
+        #Public Method
+        It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [Object]' {
+
+            # -- Arrange
 
 
         
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        New-Item -ItemType Directory -Path $InventoryFolder -ErrorAction SilentlyContinue
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            New-Item -ItemType Directory -Path $InventoryFolder -ErrorAction SilentlyContinue
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
 
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New($InventoryFolder)
-        $Instance.SetPath($InventoryFolder)
-        $Instance.CreateGroupings()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New($InventoryFolder)
+            $Instance.SetPath($InventoryFolder)
+            $Instance.CreateGroupings()
+            # -- Assert
 
-        ($Instance.GetGroups()).GetType().Name | should be Object
+            ($Instance.GetGroups()).GetType().Name | should be Object
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> ConvertGroupsToIni() : [String] - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> ConvertGroupsToIni() : [String] - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.ConvertGroupsToIni() } | Should Not Throw
+            { $Instance.ConvertGroupsToIni() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> ConvertGroupsToIni() : [String] - should return type [String]' {
+        #Public Method
+        It '[AnsibleInventory] --> ConvertGroupsToIni() : [String] - should return type [String]' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        ($Instance.ConvertGroupsToIni()).GetType().Name | should be String
+            ($Instance.ConvertGroupsToIni()).GetType().Name | should be String
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> ConvertToIni() : [string] - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> ConvertToIni() : [string] - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.ConvertToIni() } | Should Not Throw
+            { $Instance.ConvertToIni() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> ConvertToIni() : [string] - should return type [string]' {
+        #Public Method
+        It '[AnsibleInventory] --> ConvertToIni() : [string] - should return type [string]' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        ($Instance.ConvertToIni()).GetType().Name | should be string
+            ($Instance.ConvertToIni()).GetType().Name | should be string
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
 
-        $VariableCollection = [AnsibleVariableCollection]::New($vars)
+            $VariableCollection = [AnsibleVariableCollection]::New($vars)
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.SetVariableCollection($VariableCollection) } | Should Not Throw
+            { $Instance.SetVariableCollection($VariableCollection) } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should return type void' {
+        #Public Method
+        It '[AnsibleInventory] --> SetVariableCollection($VariableCollection) :  - should return type void' {
 
-        # -- Arrange
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Arrange
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
 
-        $VariableCollection = [AnsibleVariableCollection]::New($vars)
+            $VariableCollection = [AnsibleVariableCollection]::New($vars)
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        $Instance.SetVariableCollection($VariableCollection) | should be $null
+            $Instance.SetVariableCollection($VariableCollection) | should be $null
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        [AnsibleInventoryGroupingCollection]$GroupingCollection = ''
+            [AnsibleInventoryGroupingCollection]$GroupingCollection = ''
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.SetGroupingCollection($GroupingCollection) } | Should Not Throw
+            { $Instance.SetGroupingCollection($GroupingCollection) } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should return void' {
+        #Public Method
+        It '[AnsibleInventory] --> SetGroupingCollection($GroupingCollection) :  - should return void' {
 
-        # -- Arrange
-        [AnsibleInventoryGroupingCollection]$GroupingCollection = ''
+            # -- Arrange
+            [AnsibleInventoryGroupingCollection]$GroupingCollection = ''
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        $Instance.SetGroupingCollection($GroupingCollection) | should be $Null
+            $Instance.SetGroupingCollection($GroupingCollection) | should be $Null
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetPath($Path) :  - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> SetPath($Path) :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
         
 
-        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+            [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New($InventoryFolder)
+            $Instance = [AnsibleInventory]::New($InventoryFolder)
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.SetPath($InventoryFolder) } | Should Not Throw
+            { $Instance.SetPath($InventoryFolder) } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> SetPath($Path) :  - should return type []' {
+        #Public Method
+        It '[AnsibleInventory] --> SetPath($Path) :  - should return type []' {
 
-        # -- Arrange
-        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+            # -- Arrange
+            [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        $Instance.SetPath($Path) | should be $Null
+            $Instance.SetPath($Path) | should be $Null
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> Export() :  - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> Export() :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'InventoryTest'
-        New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
+            [System.IO.DirectoryInfo]$InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'InventoryTest'
+            New-Item -ItemType Directory -Path $InventoryFolder.FullName -ErrorAction SilentlyContinue
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
-        $Instance = [AnsibleInventory]::New()
-        $entry = [AnsibleInventoryEntry]::New("Node1","plop")
-        $Instance.AddInventoryEntry($entry)
-        $Instance.SetPath($InventoryFolder)
-        # -- Act
+            $Instance = [AnsibleInventory]::New()
+            $entry = [AnsibleInventoryEntry]::New("Node1", "plop")
+            $Instance.AddInventoryEntry($entry)
+            $Instance.SetPath($InventoryFolder)
+            # -- Act
 
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.Export() } | Should Not Throw
+            { $Instance.Export() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> Export() :  - should return type []' {
+        #Public Method
+        It '[AnsibleInventory] --> Export() :  - should return type []' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        $entry = [AnsibleInventoryEntry]::New("Node1","plop")
-        $Instance.AddInventoryEntry($entry)
+            $Instance = [AnsibleInventory]::New()
+            $entry = [AnsibleInventoryEntry]::New("Node1", "plop")
+            $Instance.AddInventoryEntry($entry)
 
-        # -- Assert
+            # -- Assert
 
-        $Instance.Export() | should be $null
+            $Instance.Export() | should be $null
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.GetEntries() } | Should Not Throw
+            { $Instance.GetEntries() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should return type [System.Collections.Generic.ListAnsibleInventoryEntry]' {
+        #Public Method
+        It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should return type [System.Collections.Generic.ListAnsibleInventoryEntry]' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        ($Instance.GetEntries()).GetType().Name | should be System.Collections.Generic.ListAnsibleInventoryEntry
+            ($Instance.GetEntries()).GetType().Name | should be System.Collections.Generic.ListAnsibleInventoryEntry
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> CreateGroupings() :  - should Not Throw' {
+        #Public Method
+        It '[AnsibleInventory] --> CreateGroupings() :  - should Not Throw' {
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
+            $Instance = [AnsibleInventory]::New()
 
-        # -- Assert
+            # -- Assert
 
-        { $Instance.CreateGroupings() } | Should Not Throw
+            { $Instance.CreateGroupings() } | Should Not Throw
 
-    } #End It Block
+        } #End It Block
 
-    #Public Method
-    It '[AnsibleInventory] --> CreateGroupings() :  - should return void' {
+        #Public Method
+        It '[AnsibleInventory] --> CreateGroupings() :  - should return void' {
 
-        #TODO
+            #TODO
             #Add test were we actually test if the grouping gets created...
 
-        # -- Arrange
+            # -- Arrange
 
-        # -- Act
+            # -- Act
 
-        $Instance = [AnsibleInventory]::New()
-        # -- Assert
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
 
-        ($Instance.CreateGroupings()).GetType().Name | should be $null
+            ($Instance.CreateGroupings()).GetType().Name | should be $null
 
-    } #End It Block
+        } #End It Block
 
-}#EndDescribeBlock
+    }#EndDescribeBlock
+
+}
 

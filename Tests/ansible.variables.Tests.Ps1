@@ -3,489 +3,501 @@ $TestsPath = Split-Path $MyInvocation.MyCommand.Path
 
 $RootFolder = (get-item $TestsPath).Parent
 
-$path = Join-Path -Path $RootFolder.FullName -ChildPath 'Code/Classes'
+$path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 
 Push-Location -Path $Path
 
-. .\ansible.variables.ps1
+ipmo psansible.inventory.psm1 -Force
 
-$FakeInventory = @"
-[webservers]
-foo.example.com
-bar.example.com
 
-[dbservers]
-one.example.com
-two.example.com
-three.example.com
+#endregion Header
+
+InModuleScope -ModuleName psansible.inventory -ScriptBlock {
+
+    $FakeInventory = @"
+    [webservers]
+    foo.example.com
+    bar.example.com
+
+    [dbservers]
+    one.example.com
+    two.example.com
+    three.example.com
 "@
-Describe '[AnsibleVar]-[Constructors]' {
 
-    It '[AnsibleVar]-[Constructor] - Parameterless should Not Throw' {
+    Describe '[AnsibleVar]-[Constructors]' {
 
-        # -- Arrange
+        It '[AnsibleVar]-[Constructor] - Parameterless should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVar]::New() } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVar]::New() } | Should Not Throw 
 
+        }# end of it block
 
-    It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value) should Not Throw' {
 
-        # -- Arrange
+        It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value) should Not Throw' {
 
+            # -- Arrange
 
-        [String]$Name = ''
 
+            [String]$Name = ''
 
-        [Object]$Value = ''
 
-        # -- Act
+            [Object]$Value = ''
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVar]::New($Name, $Value) } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVar]::New($Name, $Value) } | Should Not Throw 
 
+        }# end of it block
 
-    It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value,[AnsibleVarType]VarType) should Not Throw' {
 
-        # -- Arrange
+        It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value,[AnsibleVarType]VarType) should Not Throw' {
 
+            # -- Arrange
 
-        [String]$Name = 'myvar'
 
+            [String]$Name = 'myvar'
 
-        [Object]$Value = 'myvalue'
 
+            [Object]$Value = 'myvalue'
 
-        [AnsibleVarType]$VarType = 'Group'
 
-        # -- Act
+            [AnsibleVarType]$VarType = 'Group'
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVar]::New($Name, $Value, $VarType) } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVar]::New($Name, $Value, $VarType) } | Should Not Throw 
 
+        }# end of it block
 
-    It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value,[AnsibleVarType]VarType,[String]ContainerName) should Not Throw' {
 
-        # -- Arrange
+        It '[AnsibleVar]-[Constructor]([String]Name,[Object]Value,[AnsibleVarType]VarType,[String]ContainerName) should Not Throw' {
 
+            # -- Arrange
 
-        [String]$Name = 'hello'
 
+            [String]$Name = 'hello'
 
-        [Object]$Value = 'nothelo'
 
+            [Object]$Value = 'nothelo'
 
-        [AnsibleVarType]$VarType = 'host'
 
+            [AnsibleVarType]$VarType = 'host'
 
-        [String]$ContainerName = 'server123'
 
-        # -- Act
+            [String]$ContainerName = 'server123'
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVar]::New($Name, $Value, $VarType, $ContainerName) } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVar]::New($Name, $Value, $VarType, $ContainerName) } | Should Not Throw 
 
+        }# end of it block
 
-}# end of Describe block
-Describe '[AnsibleVariableCollection]-[Constructors]' {
 
-    It '[AnsibleVariableCollection]-[Constructor] - Parameterless should Not Throw' {
+    }# end of Describe block
+    Describe '[AnsibleVariableCollection]-[Constructors]' {
 
-        # -- Arrange
+        It '[AnsibleVariableCollection]-[Constructor] - Parameterless should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVariableCollection]::New() } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVariableCollection]::New() } | Should Not Throw 
 
+        }# end of it block
 
-    It '[AnsibleVariableCollection]-[Constructor]([AnsibleVar[]]Variables) should Not Throw' {
 
-        # -- Arrange
+        It '[AnsibleVariableCollection]-[Constructor]([AnsibleVar[]]Variables) should Not Throw' {
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Arrange
 
-        # -- Act
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
 
-        # -- Assert
+            # -- Act
 
-        { [AnsibleVariableCollection]::New($vars) } | Should Not Throw 
+            # -- Assert
 
-    }# end of it block
+            { [AnsibleVariableCollection]::New($vars) } | Should Not Throw 
 
+        }# end of it block
 
-}# end of Describe block
-Describe '[AnsibleVariableCollection]-[Methods]' {
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> AddVariable($Variable) :  - should Not Throw' {
+    }# end of Describe block
+    Describe '[AnsibleVariableCollection]-[Methods]' {
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleVariableCollection] --> AddVariable($Variable) :  - should Not Throw' {
 
-        [AnsibleVar]$Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+            # -- Arrange
 
-        # -- Act
+            [AnsibleVar]$Variable = [AnsibleVar]::New('var1', 'val1', 'host')
 
-        $Instance = [AnsibleVariableCollection]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
 
-        { $Instance.AddVariable($Variable) } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.AddVariable($Variable) } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> AddVariable($Variable) :  - should return void' {
+        } #End It Block
 
-        # -- Arrange
-        [AnsibleVar]$Variable =  [AnsibleVar]$Variable = [AnsibleVar]::New('var1', 'val1', 'host')
+        #Public Method
+        It '[AnsibleVariableCollection] --> AddVariable($Variable) :  - should return void' {
 
-        # -- Act
+            # -- Arrange
+            [AnsibleVar]$Variable =  [AnsibleVar]$Variable = [AnsibleVar]::New('var1', 'val1', 'host')
 
-        $Instance = [AnsibleVariableCollection]::New()
-        # -- Assert
+            # -- Act
 
-        $Instance.AddVariable($Variable) | should be $null
+            $Instance = [AnsibleVariableCollection]::New()
+            # -- Assert
 
-    } #End It Block
+            $Instance.AddVariable($Variable) | should be $null
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> SetVariables($Variables) :  - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleVariableCollection] --> SetVariables($Variables) :  - should Not Throw' {
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Arrange
 
-        # -- Act
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
 
-        $Instance = [AnsibleVariableCollection]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
 
-        { $Instance.SetVariables($vars) } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.SetVariables($vars) } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> SetVariables($Variables) :  - should return type []' {
+        } #End It Block
 
-        # -- Arrange
-        $Variables = @()
-        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
-        
+        #Public Method
+        It '[AnsibleVariableCollection] --> SetVariables($Variables) :  - should return type []' {
 
-        # -- Act
+            # -- Arrange
+            $Variables = @()
+            $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
+            
 
-        $Instance = [AnsibleVariableCollection]::New()
-        # -- Assert
+            # -- Act
 
-        $Instance.SetVariables($Variables) | should be $null
+            $Instance = [AnsibleVariableCollection]::New()
+            # -- Assert
 
-    } #End It Block
+            $Instance.SetVariables($Variables) | should be $null
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetGrouping() : [Object] - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetGrouping() : [Object] - should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        $Instance = [AnsibleVariableCollection]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
 
-        { $Instance.GetGrouping() } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.GetGrouping() } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetGrouping() : [GroupInfo] - should return type [GroupInfo]' {
+        } #End It Block
 
-        # -- Arrange
-        $Variables = @()
-        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetGrouping() : [GroupInfo] - should return type [GroupInfo]' {
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.SetVariables($Variables)
-        # -- Assert
+            # -- Arrange
+            $Variables = @()
+            $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
+            # -- Act
 
-        ($Instance.GetGrouping()).GetType().Name | should be GroupInfo
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.SetVariables($Variables)
+            # -- Assert
 
-    } #End It Block
+            ($Instance.GetGrouping()).GetType().Name | should be GroupInfo
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> SetPath($Path) :  - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleVariableCollection] --> SetPath($Path) :  - should Not Throw' {
 
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        New-Item -ItemType Directory -Path $InventoryFolder
+            # -- Arrange
 
-        $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
-        Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            New-Item -ItemType Directory -Path $InventoryFolder
 
-        [System.Io.DirectoryInfo]$Path = $InventoryFolder
+            $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
+            Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
 
-        # -- Act
+            [System.Io.DirectoryInfo]$Path = $InventoryFolder
 
-        $Instance = [AnsibleVariableCollection]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
 
-        { $Instance.SetPath($Path) } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.SetPath($Path) } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> SetPath($Path) :  - should return void' {
+        } #End It Block
 
-        # -- Arrange
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+        #Public Method
+        It '[AnsibleVariableCollection] --> SetPath($Path) :  - should return void' {
 
+            # -- Arrange
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
 
-        # -- Act
 
-        $Instance = [AnsibleVariableCollection]::New()
-        # -- Assert
+            # -- Act
 
-        $Instance.SetPath($InventoryFolder) | should be $Null
+            $Instance = [AnsibleVariableCollection]::New()
+            # -- Assert
 
-    } #End It Block
+            $Instance.SetPath($InventoryFolder) | should be $Null
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> Export() :  - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        $Variables = @()
-        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> Export() :  - should Not Throw' {
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.SetVariables($Variables)
-        $Instance.SetPath($InventoryFolder)
-        # -- Assert
+            # -- Arrange
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            $Variables = @()
+            $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
+            # -- Act
 
-        { 
-            $Instance.Export() 
-        } | Should Not Throw
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.SetVariables($Variables)
+            $Instance.SetPath($InventoryFolder)
+            # -- Assert
 
-        #TODO
-            #Add tests to validate the contents that gets created
+            { 
+                $Instance.Export() 
+            } | Should Not Throw
 
-    } #End It Block
+            #TODO
+                #Add tests to validate the contents that gets created
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> Export() :  - should be void' {
+        } #End It Block
 
-        # -- Arrange
-        $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
-        $Variables = @()
-        $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> Export() :  - should be void' {
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.SetVariables($Variables)
-        $Instance.SetPath($InventoryFolder)
+            # -- Arrange
+            $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
+            $Variables = @()
+            $Variables += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Variables += [AnsibleVar]::New('var2', 'val2', 'host')
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.SetVariables($Variables)
+            $Instance.SetPath($InventoryFolder)
 
-        $Instance.Export() | should be $null
+            # -- Assert
 
-    } #End It Block
+            $Instance.Export() | should be $null
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetGroupVariables() : [AnsibleVar[]] - should Not Throw' {
+        } #End It Block
 
-        # -- Arrange
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetGroupVariables() : [AnsibleVar[]] - should Not Throw' {
 
-        # -- Act
+            # -- Arrange
 
-        $Instance = [AnsibleVariableCollection]::New()
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
 
-        { $Instance.GetGroupVariables() } | Should Not Throw
+            # -- Assert
 
-    } #End It Block
+            { $Instance.GetGroupVariables() } | Should Not Throw
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetGroupVariables() : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
+        } #End It Block
 
-        # -- Arrange
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'Group')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'Group')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'Group')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetGroupVariables() : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
-        # -- Assert
+            # -- Arrange
+            [AnsibleVar[]]$vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'Group')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'Group')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'Group')
+            # -- Act
 
-        ($Instance.GetGroupVariables()).GetType().Name | should be AnsibleVar[]
+            $Instance = [AnsibleVariableCollection]::New()
+            Foreach($v in $vars){
 
-    } #End It Block
+                $Instance.AddVariable($v)
+            }
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetHostVariables() : [AnsibleVar[]] - should Not Throw' {
+            ($Instance.GetGroupVariables()).GetType().Name | should be AnsibleVar[]
 
-        # -- Arrange
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetHostVariables() : [AnsibleVar[]] - should Not Throw' {
 
+            # -- Arrange
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Act
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
 
-        { $Instance.GetHostVariables() } | Should Not Throw
 
-    } #End It Block
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetHostVariables() : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
+            { $Instance.GetHostVariables() } | Should Not Throw
 
-        # -- Arrange
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
-        # -- Act
+        } #End It Block
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
-        # -- Assert
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetHostVariables() : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
 
-        ($Instance.GetHostVariables()).GetType().Name | should be AnsibleVar[]
+            # -- Arrange
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Act
 
-    } #End It Block
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetVariable($Name) : [AnsibleVar[]] - should Not Throw' {
+            ($Instance.GetHostVariables()).GetType().Name | should be AnsibleVar[]
 
-        # -- Arrange
+        } #End It Block
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetVariable($Name) : [AnsibleVar[]] - should Not Throw' {
 
-        [String]$Name = 'var1'
+            # -- Arrange
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Act
 
+            [String]$Name = 'var1'
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
 
-        { $Instance.GetVariable($Name) } | Should Not Throw
 
-    } #End It Block
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetVariable($Name) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
+            { $Instance.GetVariable($Name) } | Should Not Throw
 
-        # -- Arrange
-        [String]$Name = 'var1'
+        } #End It Block
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetVariable($Name) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
 
-        [String]$Name = 'var1'
+            # -- Arrange
+            [String]$Name = 'var1'
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
-        # -- Assert
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host')
+            # -- Act
 
-        ($Instance.GetVariable($Name)).GetType().Name | should be AnsibleVar[]
+            [String]$Name = 'var1'
 
-    } #End It Block
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should Not Throw' {
+            ($Instance.GetVariable($Name)).GetType().Name | should be AnsibleVar[]
 
-        # -- Arrange
+        } #End It Block
 
-        $ContainerName = 'node2'
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host','node1')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host','node2')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host','node1')
-        # -- Act
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should Not Throw' {
 
+            # -- Arrange
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
-        # -- Act
+            $ContainerName = 'node2'
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host','node1')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host','node2')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host','node1')
+            # -- Act
 
-        $Instance = [AnsibleVariableCollection]::New()
 
-        # -- Assert
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
+            # -- Act
 
-        { $Instance.GetVariableFromContainer($ContainerName) } | Should Not Throw
+            $Instance = [AnsibleVariableCollection]::New()
 
-    } #End It Block
+            # -- Assert
 
-    #Public Method
-    It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
+            { $Instance.GetVariableFromContainer($ContainerName) } | Should Not Throw
 
-        # -- Arrange
+        } #End It Block
 
-        $ContainerName = 'node2'
+        #Public Method
+        It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
 
-        $vars = @()
-        $Vars += [AnsibleVar]::New('var1', 'val1', 'host','node1')
-        $Vars += [AnsibleVar]::New('var2', 'val2', 'host','node2')
-        $Vars += [AnsibleVar]::New('var3', 'val3', 'host','node1')
-        # -- Act
+            # -- Arrange
 
+            $ContainerName = 'node2'
 
-        $Instance = [AnsibleVariableCollection]::New()
-        $Instance.AddVariable($vars)
+            $vars = @()
+            $Vars += [AnsibleVar]::New('var1', 'val1', 'host','node1')
+            $Vars += [AnsibleVar]::New('var2', 'val2', 'host','node2')
+            $Vars += [AnsibleVar]::New('var3', 'val3', 'host','node1')
+            # -- Act
 
-        # -- Assert
 
-        ($Instance.GetVariableFromContainer($ContainerName)).GetType().Name | should be AnsibleVar[]
+            $Instance = [AnsibleVariableCollection]::New()
+            $Instance.AddVariable($vars)
 
-    } #End It Block
+            # -- Assert
 
-}#EndDescribeBlock
+            ($Instance.GetVariableFromContainer($ContainerName)).GetType().Name | should be AnsibleVar[]
+
+        } #End It Block
+
+    }#EndDescribeBlock
+
+}
+
 
