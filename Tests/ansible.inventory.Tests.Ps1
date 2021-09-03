@@ -271,7 +271,7 @@ three.example.com
         } #End It Block
 
         #Public Method
-        It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [Object]' {
+        It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [List1]' {
 
             # -- Arrange
 
@@ -292,7 +292,7 @@ three.example.com
             $Instance.CreateGroupings()
             # -- Assert
 
-            ($Instance.GetGroups()).GetType().Name | should be Object
+            ($Instance.GetGroups()).GetType().Name | should be 'List`1'
 
         } #End It Block
 
@@ -464,7 +464,7 @@ three.example.com
             $Instance = [AnsibleInventory]::New()
             # -- Assert
 
-            $Instance.SetPath($Path) | should be $Null
+            $Instance.SetPath($InventoryFile) | should be $Null
 
         } #End It Block
 
@@ -502,7 +502,7 @@ three.example.com
             $Instance = [AnsibleInventory]::New()
             $entry = [AnsibleInventoryEntry]::New("Node1", "plop")
             $Instance.AddInventoryEntry($entry)
-
+            $Instance.SetPath($TestDrive)
             # -- Assert
 
             $Instance.Export() | should be $null
@@ -525,7 +525,7 @@ three.example.com
         } #End It Block
 
         #Public Method
-        It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should return type [System.Collections.Generic.ListAnsibleInventoryEntry]' {
+        It '[AnsibleInventory] --> GetEntries() : [System.Collections.Generic.List[AnsibleInventoryEntry]] - should return type [List`1]' {
 
             # -- Arrange
 
@@ -534,22 +534,25 @@ three.example.com
             $Instance = [AnsibleInventory]::New()
             # -- Assert
 
-            ($Instance.GetEntries()).GetType().Name | should be System.Collections.Generic.ListAnsibleInventoryEntry
-
+            ($Instance.GetEntries()).GetType().Name | should -Be 'List`1'
         } #End It Block
 
         #Public Method
-        It '[AnsibleInventory] --> CreateGroupings() :  - should Not Throw' {
+        It '[AnsibleInventory] --> CreateGroupings() :  - should Not Throw and create the groupings' {
 
             # -- Arrange
 
             # -- Act
 
             $Instance = [AnsibleInventory]::New()
+            $entry = [AnsibleInventoryEntry]::New("Node1", "plop")
+            $Instance.AddInventoryEntry($entry)
+            $Instance.SetPath($TestDrive)
 
             # -- Assert
 
             { $Instance.CreateGroupings() } | Should Not Throw
+            $Instance.GroupCollection | Should -Not -BeNullOrEmpty
 
         } #End It Block
 
@@ -564,9 +567,12 @@ three.example.com
             # -- Act
 
             $Instance = [AnsibleInventory]::New()
+            $entry = [AnsibleInventoryEntry]::New("Node1", "plop")
+            $Instance.AddInventoryEntry($entry)
+            $Instance.SetPath($TestDrive)
             # -- Assert
 
-            ($Instance.CreateGroupings()).GetType().Name | should be $null
+            $Instance.CreateGroupings() | should be $null
 
         } #End It Block
 
