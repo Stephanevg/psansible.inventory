@@ -53,7 +53,7 @@ Class AnsibleVariableCollection {
         $this.SetVariables($Variables)
     }
 
-    AddVariable([AnsibleVar]$Variable) {
+    AddVariable([AnsibleVar[]]$Variable) {
         $this.Variables += $Variable
     }
 
@@ -160,7 +160,7 @@ Class AnsibleVariableCollection {
     }
 
     [AnsibleVar[]]GetGroupVariables() {
-        $AllGroupVariables = @()
+        $AllGroupVariables = [AnsibleVar[]]@()
         $AllGroupVariables = $This.Variables | ? { $_.VarType -eq 'Group' }
         Return $AllGroupVariables
     }

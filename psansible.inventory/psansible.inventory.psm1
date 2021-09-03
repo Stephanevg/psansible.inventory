@@ -1,4 +1,4 @@
-#Generated at 07/23/2021 10:28:03 by Stephane van Gulick
+#Generated at 09/03/2021 13:09:05 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -6,8 +6,6 @@ Class AnsibleInventoryEntry {
     [String]$NodeName
     $GroupMemberShip = [System.Collections.Generic.List[string]]::new()
     
-
-    #stage_tenantName_OS-Category_BusingessGroup_NodeName
 
     AnsibleInventoryEntry() {}
 
@@ -38,12 +36,14 @@ Class AnsibleInventoryEntry {
 
 Class AnsibleInventoryEntryCollection {
     
-    $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
+    [System.Collections.Generic.List[AnsibleInventoryEntry]] $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
 
     AnsibleInventoryEntryCollection() {}
 
     AnsibleInventoryEntryCollection([AnsibleInventoryEntry[]]$Entry) {
-        $this.Entries.Add($Entry)
+
+            $this.AddEntry($Entry)
+
     }
 
     AddEntry($Entry) {
@@ -513,7 +513,7 @@ Class AnsibleInventory {
     AnsibleInventory($Entries, $Hiearchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy += $Hiearchy
+        $this.Hiearchy.AddEntry($Hiearchy)
 
     }
 
@@ -544,7 +544,7 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    AddGrouping([AnsibleInventoryGrouping]$Grouping) {
+    AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
 
@@ -685,7 +685,7 @@ Class AnsibleVariableCollection {
         $this.SetVariables($Variables)
     }
 
-    AddVariable([AnsibleVar]$Variable) {
+    AddVariable([AnsibleVar[]]$Variable) {
         $this.Variables += $Variable
     }
 
@@ -792,7 +792,7 @@ Class AnsibleVariableCollection {
     }
 
     [AnsibleVar[]]GetGroupVariables() {
-        $AllGroupVariables = @()
+        $AllGroupVariables = [AnsibleVar[]]@()
         $AllGroupVariables = $This.Variables | ? { $_.VarType -eq 'Group' }
         Return $AllGroupVariables
     }
