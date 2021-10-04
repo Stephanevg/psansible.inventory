@@ -1,4 +1,4 @@
-#Generated at 09/03/2021 13:09:05 by Stephane van Gulick
+#Generated at 10/04/2021 08:55:56 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -890,7 +890,7 @@ Function New-AnsibleInventoryGrouping {
     Return $Grouping
 }
 Function New-AnsibleInventoryGroupingCollection {
-    [CmldetBinding()]
+    [Cmdletbinding()]
     Param(
 
     )
