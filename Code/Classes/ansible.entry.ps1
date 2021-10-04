@@ -6,8 +6,6 @@ Class AnsibleInventoryEntry {
     $GroupMemberShip = [System.Collections.Generic.List[string]]::new()
     
 
-    #stage_tenantName_OS-Category_BusingessGroup_NodeName
-
     AnsibleInventoryEntry() {}
 
     AnsibleInventoryEntry([String]$NodeName) {
@@ -37,12 +35,14 @@ Class AnsibleInventoryEntry {
 
 Class AnsibleInventoryEntryCollection {
     
-    $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
+    [System.Collections.Generic.List[AnsibleInventoryEntry]] $Entries = [System.Collections.Generic.List[AnsibleInventoryEntry]]::new()
 
     AnsibleInventoryEntryCollection() {}
 
     AnsibleInventoryEntryCollection([AnsibleInventoryEntry[]]$Entry) {
-        $this.Entries.Add($Entry)
+
+            $this.AddEntry($Entry)
+
     }
 
     AddEntry($Entry) {

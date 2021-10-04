@@ -189,7 +189,7 @@ Class AnsibleInventory {
     AnsibleInventory($Entries, $Hiearchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy += $Hiearchy
+        $this.Hiearchy.AddEntry($Hiearchy)
 
     }
 
@@ -220,7 +220,7 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    AddGrouping([AnsibleInventoryGrouping]$Grouping) {
+    AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
 
