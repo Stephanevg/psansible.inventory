@@ -1,5 +1,5 @@
 Function New-AnsibleInventoryGroupingCollection {
-    [CmldetBinding()]
+    [Cmdletbinding()]
     Param(
 
     )
