@@ -119,3 +119,13 @@ Children                 Parent
 {HR_Servers, MK_Servers} prod
 ```
 
+## Exporting the inventory
+
+The most simplest way of generating an inventory would be as followed
+
+```powershell
+
+$Inventory = New-AnsibleInventory
+$Inventory.Export()
+
+```
