@@ -227,7 +227,7 @@ Class AnsibleInventory {
     AddVariable([object]$Variable){
         #Will change to AnsibleInventoryItem once class is there.
         Foreach($var in $Variable){
-            $this.VariableCollection.AddVariable($Variable)
+            $this.VariableCollection.AddVariable($var)
         }
         
     }
