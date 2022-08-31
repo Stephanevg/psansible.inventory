@@ -1,7 +1,7 @@
 
 # To migrate to readme.md
 
-import-module psansible.inventory
+import-module ../psansible.inventory/psansible.inventory.psm1 -Force
 
 
 # Creating a new inventory
@@ -37,19 +37,19 @@ $Inventory
 
 #Fetching variabl
 
-$VariableCollection.GetGroupVariables()
-$VariableCollection.GetHostVariables()
+$Inventory.VariableCollection.GetGroupVariables()
+$Inventory.VariableCollection.GetHostVariables()
 
 #Showing Grouping
 
-$VariableCollection.GetGrouping()
+$Inventory.VariableCollection.GetGrouping()
 
-$VariableCollection.GetVariable('wsusServer')
-$VariableCollection.GetVariableFromContainer('Node0055620.Node-005.dev.woop.net')
+$Inventory.VariableCollection.GetVariable('wsusServer')
+$Inventory.VariableCollection.GetVariableFromContainer('Node0055620.Node-005.dev.woop.net')
 
 #Adding the Variables to the Inventory
 
-$Inventory.SetVariableCollection($VariableCollection)
+#$Inventory.SetVariableCollection($VariableCollection)
 
 
 #Exporting the data
