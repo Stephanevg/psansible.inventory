@@ -151,6 +151,23 @@ Class AnsibleInventoryGrouping {
     [void]SetHasChildren([bool]$HasChildren) {
         $this.HasChildren = $HasChildren
     }
+
+    [String] ToJson(){
+        #Returns a json representation of the object that can be used with 'inventory scripts'
+
+        $Hash = @{$this.Name = @{}}
+
+        if($this.HasChildren){
+            $hash.$($this.name)."children" = $this.members
+        }else{
+            $hash.$($this.name)."hosts" = $this.members
+        }
+
+        $jsonStructure = $hash | ConvertTo-Json
+
+        return $jsonStructure
+         
+    }
 }
 
 Class AnsibleInventoryGroupingCollection {
@@ -613,6 +630,31 @@ Class AnsibleInventory {
         if ($this.VariableCollection) {
             $This.VariableCollection.Export()
         }
+    }
+
+    [object] ExportToJson(){
+        
+
+        #Creating master group name called 'all' which englobes ALL existing groups
+        
+        $group_all = New-AnsibleInventoryGrouping -Name "all" -HasChildren
+        $group_meta = New-AnsibleInventoryGrouping -Name "_meta" -HasChildren -Members ""
+        $AllGroupNames = $this.GroupCollection.GetGroupNames() -split ","
+
+        foreach($groupName in $AllGroupNames){
+            $group_all.AddMember($groupName)
+        }
+        $this.CreateGroupings()
+        $this.AddGrouping($group_meta)
+        $this.AddGrouping($group_all)
+        $FullJson = ""
+        foreach($grouping in $this.GroupCollection.Groups){
+            $FullJson += $grouping.ToJson() + ","
+        }
+         
+
+        return $FullJson
+        
     }
 
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {

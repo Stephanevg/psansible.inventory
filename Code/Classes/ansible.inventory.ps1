@@ -291,6 +291,13 @@ Class AnsibleInventory {
         }
     }
 
+    ExportToJson() {
+
+        $this.CreateGroupings()
+        
+
+    }
+
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()
     }

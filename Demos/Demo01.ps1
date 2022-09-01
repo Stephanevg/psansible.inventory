@@ -51,13 +51,44 @@ $Inventory.VariableCollection.GetVariableFromContainer('Node0055620.Node-005.dev
 
 #$Inventory.SetVariableCollection($VariableCollection)
 
+$Servers = @()
+$Servers+= "woop1"
+$Servers+= "woop2"
+$Servers+= "woop3"
+$Servers+= "woop4"
+$hrservers = @()
+$hrservers+= "woop5"
+$hrservers+= "woop6"
+$hrservers+= "woop7"
+$hrservers+= "woop8"
+
+Foreach($ser in $servers){
+    $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_prod_servers"
+    $Inventory.AddInventoryEntry($entry)
+}
+
+Foreach($ser in $hrservers){
+    $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_prod_servers"
+    $Inventory.AddInventoryEntry($entry)
+}
+
+
+Foreach($ser in $hrservers){
+    $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_hr_servers"
+    $Inventory.AddInventoryEntry($entry)
+}
+
 
 #Exporting the data
-$Inventory.SetPath('./Inventories/Windows/')
+#$Inventory.SetPath('./Inventories/Windows/')
 
-$Inventory.Export()
+#$Inventory.Export()
+$Inventory.CreateGroupings()
+foreach($grouping in $Inventory.GroupCollection.Groups){
+    $grouping.ToJson()
+}
 
-
+$Inventory.ExportToJson()
 
 
 
