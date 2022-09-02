@@ -291,13 +291,6 @@ Class AnsibleInventory {
         }
     }
 
-    ExportToJson() {
-
-        $this.CreateGroupings()
-        
-
-    }
-
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()
     }
@@ -311,5 +304,46 @@ Class AnsibleInventory {
             $GroupingCollection.AddGrouping($grp)
         }
         $this.SetGroupingCollection($GroupingCollection)
+    }
+
+    [object] ToJson(){
+        
+        #This method returns a json representation of the contained inventory.
+
+        $this.CreateGroupings()
+        $Json_hash = [ordered]@{"_meta"=@{"hostvars"=@{}};"all"=@{};"ungrouped"=@{}}
+        
+        #Creating the Groups and groupings
+        foreach($grouping in $This.GroupCollection.Groups){
+            $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=$grouping.members;"vars"=@()}
+            #Fetching group vars
+            $vars = $this.VariableCollection.GetVariablesFromContainer($grouping.name)
+            if($vars){
+                if(!$json_hash."all".$($grouping.Name)."vars"){
+                    $json_hash."all".$($grouping.Name)."vars" = @{}
+                }
+                foreach($var in $vars){
+
+                    $json_hash."all".$($grouping.Name)."vars".$($var.Name) = $var.value
+                }
+            }
+        }
+
+        #Hostvars
+        $AllGroupedHostVariables = $This.VariableCollection.GetHostVariables() | Group-object ContainerName
+
+        foreach($GroupedhostVariables in $AllGroupedHostVariables){
+            if(!$Json_hash._meta.hostvars.$($GroupedhostVariables.name)){
+                $Json_hash._meta.hostvars.$($GroupedhostVariables.name) = @{}
+            }
+            foreach($grp in $GroupedhostVariables.group){
+                $Json_hash._meta.hostvars.$($GroupedhostVariables.name)."$($grp.Name)" = $grp.Value
+            }
+
+        }
+
+        #Returning Json representation of the ansible inventory
+        return $Json_hash | ConvertTo-Json -Depth 7
+        
     }
 }

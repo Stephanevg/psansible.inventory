@@ -152,22 +152,6 @@ Class AnsibleInventoryGrouping {
         $this.HasChildren = $HasChildren
     }
 
-    [String] ToJson(){
-        #Returns a json representation of the object that can be used with 'inventory scripts'
-
-        $Hash = @{$this.Name = @{}}
-
-        if($this.HasChildren){
-            $hash.$($this.name)."children" = $this.members
-        }else{
-            $hash.$($this.name)."hosts" = $this.members
-        }
-
-        $jsonStructure = $hash | ConvertTo-Json
-
-        return $jsonStructure
-         
-    }
 }
 
 Class AnsibleInventoryGroupingCollection {
@@ -632,28 +616,44 @@ Class AnsibleInventory {
         }
     }
 
-    [object] ExportToJson(){
+    [object] ToJson(){
         
+        #This method returns a json representation of the contained inventory.
 
-        #Creating master group name called 'all' which englobes ALL existing groups
-        
-        $group_all = New-AnsibleInventoryGrouping -Name "all" -HasChildren
-        $group_meta = New-AnsibleInventoryGrouping -Name "_meta" -HasChildren -Members ""
-        $AllGroupNames = $this.GroupCollection.GetGroupNames() -split ","
-
-        foreach($groupName in $AllGroupNames){
-            $group_all.AddMember($groupName)
-        }
         $this.CreateGroupings()
-        $this.AddGrouping($group_meta)
-        $this.AddGrouping($group_all)
-        $FullJson = ""
-        foreach($grouping in $this.GroupCollection.Groups){
-            $FullJson += $grouping.ToJson() + ","
-        }
-         
+        $Json_hash = [ordered]@{"_meta"=@{"hostvars"=@{}};"all"=@{};"ungrouped"=@{}}
+        
+        #Creating the Groups and groupings
+        foreach($grouping in $This.GroupCollection.Groups){
+            $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=$grouping.members;"vars"=@()}
+            #Fetching group vars
+            $vars = $this.VariableCollection.GetVariablesFromContainer($grouping.name)
+            if($vars){
+                if(!$json_hash."all".$($grouping.Name)."vars"){
+                    $json_hash."all".$($grouping.Name)."vars" = @{}
+                }
+                foreach($var in $vars){
 
-        return $FullJson
+                    $json_hash."all".$($grouping.Name)."vars".$($var.Name) = $var.value
+                }
+            }
+        }
+
+        #Hostvars
+        $AllGroupedHostVariables = $This.VariableCollection.GetHostVariables() | Group-object ContainerName
+
+        foreach($GroupedhostVariables in $AllGroupedHostVariables){
+            if(!$Json_hash._meta.hostvars.$($GroupedhostVariables.name)){
+                $Json_hash._meta.hostvars.$($GroupedhostVariables.name) = @{}
+            }
+            foreach($grp in $GroupedhostVariables.group){
+                $Json_hash._meta.hostvars.$($GroupedhostVariables.name)."$($grp.Name)" = $grp.Value
+            }
+
+        }
+
+        #Returning Json representation of the ansible inventory
+        return $Json_hash | ConvertTo-Json -Depth 7
         
     }
 
@@ -851,7 +851,7 @@ Class AnsibleVariableCollection {
         Return $TempVars
     }
 
-    [AnsibleVar[]] GetVariableFromContainer($ContainerName) {
+    [AnsibleVar[]] GetVariablesFromContainer($ContainerName) {
         $TempVars = @()
         $TempVars = $This.Variables | ? { $_.ContainerName -eq $ContainerName }
         Return $TempVars

@@ -24,8 +24,18 @@ $Inventory.AddHiearchy($Arch)
 #>
 
 $vars = @()
-$vars += New-AnsibleInventoryVariable -Name "plop" -Type Group -Value "WWW" -ContainerName "ABC"
-$vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "server123"
+$vars += New-AnsibleInventoryVariable -Name "stage" -Value "prod" -ContainerName "all_prod_servers" -Type Group
+$vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.com" -ContainerName "all_prod_servers" -Type Group
+$vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.child.com" -ContainerName "all_hr_servers" -Type Group
+$vars += New-AnsibleInventoryVariable -Name "Building" -Value "HR_01" -ContainerName "all_hr_servers" -Type Group
+$vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "woop5"
+$vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "tempadmin" -ContainerName "woop5"
+$vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop1"
+$vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop2"
+$vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop3"
+$vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop4"
+
+
 $vars
 
 #Adding a variable to an PsAnsibleInventory
@@ -45,7 +55,7 @@ $Inventory.VariableCollection.GetHostVariables()
 $Inventory.VariableCollection.GetGrouping()
 
 $Inventory.VariableCollection.GetVariable('wsusServer')
-$Inventory.VariableCollection.GetVariableFromContainer('Node0055620.Node-005.dev.woop.net')
+$Inventory.VariableCollection.GetVariablesFromContainer('Node0055620.Node-005.dev.woop.net')
 
 #Adding the Variables to the Inventory
 
@@ -84,11 +94,38 @@ Foreach($ser in $hrservers){
 
 #$Inventory.Export()
 $Inventory.CreateGroupings()
+$Json_hash = [ordered]@{"_meta"=@{"hostvars"=@{}};"all"=@{};"ungrouped"=@{}}
 foreach($grouping in $Inventory.GroupCollection.Groups){
-    $grouping.ToJson()
+    $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=$grouping.members;"vars"=@()}
+    #Fetching hostvars
+    $vars = $Inventory.VariableCollection.GetVariablesFromContainer($grouping.name)
+    if($vars){
+        if(!$json_hash."all".$($grouping.Name)."vars"){
+            $json_hash."all".$($grouping.Name)."vars" = @{}
+        }
+        foreach($var in $vars){
+
+            $json_hash."all".$($grouping.Name)."vars".$($var.Name) = $var.value
+        }
+    }
+
 }
 
-$Inventory.ExportToJson()
+$AllGroupedHostVariables = $Inventory.VariableCollection.GetHostVariables() | Group-object ContainerName
+
+foreach($GroupedhostVariables in $AllGroupedHostVariables){
+    if(!$Json_hash._meta.hostvars.$($GroupedhostVariables.name)){
+        $Json_hash._meta.hostvars.$($GroupedhostVariables.name) = @{}
+    }
+    foreach($grp in $GroupedhostVariables.group){
+        $Json_hash._meta.hostvars.$($GroupedhostVariables.name)."$($grp.Name)" = $grp.Value
+    }
+
+}
+
+#Returning Json
+$Json_hash | ConvertTo-Json -Depth 7
+
 
 
 

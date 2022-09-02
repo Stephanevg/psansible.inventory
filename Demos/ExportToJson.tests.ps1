@@ -33,6 +33,6 @@ $Inventory.AddVariable($vars)
 
 $Inventory
 
-$Inventory.ExportToJson()
+$Inventory.ToJson()
 
 
