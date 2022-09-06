@@ -625,9 +625,18 @@ Class AnsibleInventory {
         
         #Creating the Groups and groupings
         foreach($grouping in $This.GroupCollection.Groups){
-            $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=$grouping.members;"vars"=@()}
+            $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=@();"vars"=@()}
             #Fetching group vars
             $vars = $this.VariableCollection.GetVariablesFromContainer($grouping.name)
+
+            #Hosts / children
+        if($grouping.HasChildren){
+            $json_hash."all".$($grouping.Name)."children" = $grouping.members
+    
+        }else{
+            $json_hash."all".$($grouping.Name)."hosts" = $grouping.members
+        }
+
             if($vars){
                 if(!$json_hash."all".$($grouping.Name)."vars"){
                     $json_hash."all".$($grouping.Name)."vars" = @{}
