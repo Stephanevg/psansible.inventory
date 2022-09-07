@@ -433,12 +433,17 @@ Class AnsibleInventory {
 
         #Getting variables
 
+        if($this.Path.Name.EndsWith(".ini")){
+            [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path $this.Path.Parent -ChildPath "group_vars"
+            [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path $this.Path.Parent -ChildPath "hosts_vars"
+        }else{
+
+        
         [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "group_vars"
         [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "hosts_vars"
-
+        }
         
 
-        
         If ($group_vars_folder.Exists) {
             $GroupVarFiles = Get-ChildItem -path $group_vars_folder.FullName
 
@@ -559,7 +564,7 @@ Class AnsibleInventory {
 
     [Object]GetGroups() {
 
-        return $this.Groups
+        return $this.GroupCollection.Groups
     }
 
     [String]ConvertGroupsToIni() {
