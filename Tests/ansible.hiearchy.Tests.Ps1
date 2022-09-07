@@ -9,7 +9,7 @@ $path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 Push-Location -Path $Path
 
-ipmo psansible.inventory.psm1 -Force
+ipmo ./psansible.inventory.psm1 -Force
 
 #endregion Header
 InModuleScope -ModuleName psansible.inventory -ScriptBlock {

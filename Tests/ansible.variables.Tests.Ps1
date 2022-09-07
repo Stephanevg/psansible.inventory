@@ -8,7 +8,7 @@ $path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 Push-Location -Path $Path
 
-ipmo psansible.inventory.psm1 -Force
+ipmo ./psansible.inventory.psm1 -Force
 
 
 #endregion Header
@@ -449,7 +449,7 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
 
         #Public Method
-        It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should Not Throw' {
+        It '[AnsibleVariableCollection] --> GetVariablesFromContainer($ContainerName) : [AnsibleVar[]] - should Not Throw' {
 
             # -- Arrange
 
@@ -469,12 +469,12 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
 
             # -- Assert
 
-            { $Instance.GetVariableFromContainer($ContainerName) } | Should Not Throw
+            { $Instance.GetVariablesFromContainer($ContainerName) } | Should Not Throw
 
         } #End It Block
 
         #Public Method
-        It '[AnsibleVariableCollection] --> GetVariableFromContainer($ContainerName) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
+        It '[AnsibleVariableCollection] --> GetVariablesFromContainer($ContainerName) : [AnsibleVar[]] - should return type [AnsibleVar[]]' {
 
             # -- Arrange
 
@@ -492,7 +492,7 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
 
             # -- Assert
 
-            ($Instance.GetVariableFromContainer($ContainerName)).GetType().Name | should be AnsibleVar[]
+            ($Instance.GetVariablesFromContainer($ContainerName)).GetType().Name | should be AnsibleVar[]
 
         } #End It Block
 

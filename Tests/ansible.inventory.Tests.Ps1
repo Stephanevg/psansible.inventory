@@ -10,7 +10,7 @@ $path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 Push-Location -Path $Path
 
-ipmo psansible.inventory.psm1 -Force
+ipmo ./psansible.inventory.psm1 -Force
 
 
 #endregion Header
@@ -279,6 +279,8 @@ three.example.com
         
             $InventoryFolder = Join-Path -Path $TestDrive -ChildPath 'Inventory'
             New-Item -ItemType Directory -Path $InventoryFolder -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Path "$InventoryFolder/group_vars" -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Path "$InventoryFolder/host_vars" -ErrorAction SilentlyContinue
 
             $InventoryFile = Join-Path -Path $InventoryFolder -ChildPath "inventory.ini"
             Out-File -FilePath $InventoryFile -Force -InputObject $FakeInventory 
@@ -576,7 +578,201 @@ three.example.com
 
         } #End It Block
 
+        #Public Method
+        It '[AnsibleInventory] --> ToJson() : [string] - should return type [string]' {
+
+            # -- Arrange
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
+
+            ($Instance.ToJson()).GetType().Name | should be string
+
+        } #End It Block
+
+        It '[AnsibleInventory] --> ToJson() : [string] - should return valid JSON object' {
+
+            # -- Arrange
+
+            # -- Act
+
+            $Instance = [AnsibleInventory]::New()
+            # -- Assert
+            $Json = $Instance.ToJson()
+            $JsonObject = $Json | convertFrom-json
+            $JsonKeys = $JsonObject | get-member -MemberType NoteProperty | select-object Name
+
+            $JsonKeys.Name.contains("all") | should -Be $True
+            $JsonKeys.Name.contains("_meta") | should -Be $True
+            $JsonKeys.Name.contains("ungrouped") | should -Be $True
+
+        } #End It Block
+
+        It '[AnsibleInventory] --> ToJson() : [string] - JSON should contain correct data' {
+
+            # -- Arrange
+
+            $Inventory = New-AnsibleInventory
+            # -- Act
+
+            #Creating Hiearchy
+            $Arch = @()
+            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_prod_servers" -Children "all_hr_servers","all_marketing_servers","all_database_servers"
+            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_database_servers" -Children "all_mongodb_servers","all_postgres_servers"
+            $Inventory.AddHiearchy($Arch)
+
+            
+            #Creating servers and groups
+            $Servers = @()
+            $Servers+= "woop1"
+            $Servers+= "woop2"
+            $Servers+= "woop3"
+            $Servers+= "woop4"
+            
+            $hrservers = @()
+            $hrservers+= "woop5"
+            $hrservers+= "woop6"
+            $hrservers+= "woop7"
+            $hrservers+= "woop8"
+            
+            Foreach($ser in $servers){
+                $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_mongodb_servers"
+                $Inventory.AddInventoryEntry($entry)
+            }
+            
+            
+            Foreach($ser in $hrservers){
+                $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_hr_servers"
+                $Inventory.AddInventoryEntry($entry)
+            }
+            
+            $E = New-AnsibleInventoryEntry -NodeName "IamAlone" -Group "" 
+            $Inventory.AddInventoryEntry($E)
+            
+            #Creating and Adding variables to PsAnsibleInventory
+            
+            $vars = @()
+            $vars += New-AnsibleInventoryVariable -Name "plop" -Type Group -Value "WWW" -ContainerName "ABC"
+            $vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "server123"
+            $vars += New-AnsibleInventoryVariable -Name "stage" -Value "prod" -ContainerName "all_prod_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.com" -ContainerName "all_prod_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.child.com" -ContainerName "all_hr_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "Building" -Value "HR_01" -ContainerName "all_hr_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "woop5"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "tempadmin" -ContainerName "woop5"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop1"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop2"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop3"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop4"
+            $vars += New-AnsibleInventoryVariable -Type Group -Name "entity" -Value "os.services.windows.2019" -ContainerName "woop4"
+            
+            # -- Assert
+
+            $Inventory.AddVariable($vars) 
+
+            $jobj = $Inventory.ToJson() | ConvertFrom-Json
+            
+            $jobj._meta.hostvars."woop5".maintenance_time | should -be "sunday"
+            $jobj._meta.hostvars."woop3".state | should -be "fullmanaged"
+
+            $jobj.all.all_hr_servers.hosts.Count | should -be 4
+            $jobj.all.all_hr_servers.vars.wsus_server | should -be "http://plop.child.com"
+        } #End It Block
+        
     }#EndDescribeBlock
 
+    Describe '[AnsibleInventory] - [Methods] - [ToJson]' {
+        #Specific section to test the data that is returned by ToJson is accurate
+
+        #Preparing test data
+
+        $Inventory = New-AnsibleInventory
+            # -- Act
+
+            #Creating Hiearchy
+            $Arch = @()
+            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_prod_servers" -Children "all_hr_servers","all_marketing_servers","all_database_servers"
+            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_database_servers" -Children "all_mongodb_servers","all_postgres_servers"
+            $Inventory.AddHiearchy($Arch)
+
+            
+            #Creating servers and groups
+            $Servers = @()
+            $Servers+= "woop1"
+            $Servers+= "woop2"
+            $Servers+= "woop3"
+            $Servers+= "woop4"
+            
+            $hrservers = @()
+            $hrservers+= "woop5"
+            $hrservers+= "woop6"
+            $hrservers+= "woop7"
+            $hrservers+= "woop8"
+            
+            Foreach($ser in $servers){
+                $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_mongodb_servers"
+                $Inventory.AddInventoryEntry($entry)
+            }
+            
+            
+            Foreach($ser in $hrservers){
+                $entry = New-AnsibleInventoryEntry -NodeName $ser -Group "all_hr_servers"
+                $Inventory.AddInventoryEntry($entry)
+            }
+            
+            $E = New-AnsibleInventoryEntry -NodeName "IamAlone" -Group "" 
+            $Inventory.AddInventoryEntry($E)
+            
+            #Creating and Adding variables to PsAnsibleInventory
+            
+            $vars = @()
+            $vars += New-AnsibleInventoryVariable -Name "plop" -Type Group -Value "WWW" -ContainerName "ABC"
+            $vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "server123"
+            $vars += New-AnsibleInventoryVariable -Name "stage" -Value "prod" -ContainerName "all_prod_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.com" -ContainerName "all_prod_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "wsus_server" -Value "http://plop.child.com" -ContainerName "all_hr_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "Building" -Value "HR_01" -ContainerName "all_hr_servers" -Type Group
+            $vars += New-AnsibleInventoryVariable -Name "maintenance_time" -Type Host -Value "sunday" -ContainerName "woop5"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "tempadmin" -ContainerName "woop5"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop1"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop2"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop3"
+            $vars += New-AnsibleInventoryVariable -Name "state" -Type Host -Value "fullmanaged" -ContainerName "woop4"
+            $vars += New-AnsibleInventoryVariable -Type Group -Name "entity" -Value "os.services.windows.2019" -ContainerName "woop4"
+            
+            # -- Assert
+
+            $Inventory.AddVariable($vars) 
+
+            $jobj = $Inventory.ToJson() | ConvertFrom-Json
+
+        It '[AnsibleInventory] --> ToJson() : [string] - JSON should contain "_meta" section with correct data' {
+
+            # -- Arrange
+            $jobj._meta | should -not -BeNullOrEmpty
+
+        } #End It Block
+
+        It '[AnsibleInventory] --> ToJson() : [string] - JSON should contain "_meta.hostvars" section with correct data' {
+
+            
+            $jobj._meta.hostvars."woop5".maintenance_time | should -be "sunday"
+            $jobj._meta.hostvars."woop3".state | should -be "fullmanaged"
+
+            $jobj.all.all_hr_servers.hosts.Count | should -be 4
+            $jobj.all.all_hr_servers.vars.wsus_server | should -be "http://plop.child.com"
+        } #End It Block
+
+        It '[AnsibleInventory] --> ToJson() : [string] - JSON should contain "all" section with nodes and vars' {
+
+            $jobj.all.all_hr_servers.hosts.Count | should -be 4
+            $jobj.all.all_hr_servers.hosts.contains("woop7")
+            $jobj.all.all_hr_servers.vars.wsus_server | should -be "http://plop.child.com"
+        } #End It Block
+        
+
+    }
 }
 
