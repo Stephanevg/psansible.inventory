@@ -93,38 +93,6 @@ Foreach($ser in $hrservers){
 #$Inventory.SetPath('./Inventories/Windows/')
 
 #$Inventory.Export()
-$Inventory.CreateGroupings()
-$Json_hash = [ordered]@{"_meta"=@{"hostvars"=@{}};"all"=@{};"ungrouped"=@{}}
-foreach($grouping in $Inventory.GroupCollection.Groups){
-    $json_hash."all".$($grouping.Name) = [ordered]@{"hosts"=$grouping.members;"vars"=@()}
-    #Fetching hostvars
-    $vars = $Inventory.VariableCollection.GetVariablesFromContainer($grouping.name)
-    if($vars){
-        if(!$json_hash."all".$($grouping.Name)."vars"){
-            $json_hash."all".$($grouping.Name)."vars" = @{}
-        }
-        foreach($var in $vars){
-
-            $json_hash."all".$($grouping.Name)."vars".$($var.Name) = $var.value
-        }
-    }
-
-}
-
-$AllGroupedHostVariables = $Inventory.VariableCollection.GetHostVariables() | Group-object ContainerName
-
-foreach($GroupedhostVariables in $AllGroupedHostVariables){
-    if(!$Json_hash._meta.hostvars.$($GroupedhostVariables.name)){
-        $Json_hash._meta.hostvars.$($GroupedhostVariables.name) = @{}
-    }
-    foreach($grp in $GroupedhostVariables.group){
-        $Json_hash._meta.hostvars.$($GroupedhostVariables.name)."$($grp.Name)" = $grp.Value
-    }
-
-}
-
-#Returning Json
-$Json_hash | ConvertTo-Json -Depth 7
 
 
 
