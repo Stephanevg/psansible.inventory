@@ -69,7 +69,7 @@ three.example.com
         }# end of it block
 
 
-        It '[AnsibleInventory]-[Constructor](Entries,Hiearchy) should Not Throw' {
+        It '[AnsibleInventory]-[Constructor](Entries,Hierarchy) should Not Throw' {
 
             # -- Arrange
 
@@ -77,14 +77,14 @@ three.example.com
             $Entries = ''
 
 
-            $Hiearchy = ''
+            $Hierarchy = ''
 
             # -- Act
 
             # -- Assert
 
             { 
-                [AnsibleInventory]::New($Entries, $Hiearchy) 
+                [AnsibleInventory]::New($Entries, $Hierarchy) 
             } | Should Not Throw 
 
         }# end of it block
@@ -94,11 +94,11 @@ three.example.com
     Describe '[AnsibleInventory]-[Methods]' {
 
         #Public Method
-        It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should Not Throw' {
+        It '[AnsibleInventory] --> AddHierarchy($Hierarchy) :  - should Not Throw' {
 
             # -- Arrange
 
-            $Hiearchy = [AnsibleInventoryHiearchyEntry]::New("Parent", "Child")
+            $Hierarchy = [AnsibleInventoryHierarchyEntry]::New("Parent", "Child")
 
             # -- Act
 
@@ -106,22 +106,22 @@ three.example.com
 
             # -- Assert
 
-            { $Instance.AddHiearchy($Hiearchy) } | Should Not Throw
+            { $Instance.AddHierarchy($Hierarchy) } | Should Not Throw
 
         } #End It Block
 
         #Public Method
-        It '[AnsibleInventory] --> AddHiearchy($Hiearchy) :  - should return type void' {
+        It '[AnsibleInventory] --> AddHierarchy($Hierarchy) :  - should return type void' {
 
             # -- Arrange
-            $Hiearchy = ''
+            $Hierarchy = ''
 
             # -- Act
 
             $Instance = [AnsibleInventory]::New()
             # -- Assert
 
-            $Instance.AddHiearchy($Hiearchy) | should be $null
+            $Instance.AddHierarchy($Hierarchy) | should be $null
 
         } #End It Block
 

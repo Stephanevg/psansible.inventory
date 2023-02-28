@@ -69,11 +69,11 @@ RequiredModules = @('powershell-yaml')
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-AnsibleInventory', 'Import-AnsibleInventoryHiearchy', 
+FunctionsToExport = 'Import-AnsibleInventory', 'Import-AnsibleInventoryHierarchy', 
                'New-AnsibleInventory', 'New-AnsibleInventoryEntry', 
                'New-AnsibleInventoryGrouping', 
                'New-AnsibleInventoryGroupingCollection', 
-               'New-AnsibleInventoryHiearchyEntry', 'New-AnsibleInventoryVariable', 
+               'New-AnsibleInventoryHierarchyEntry', 'New-AnsibleInventoryVariable', 
                'New-AnsibleInventoryVariableCollection'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

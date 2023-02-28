@@ -14,9 +14,9 @@ ipmo psansible.inventory.psm1 -Force
 #endregion Header
 InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
-    Describe '[AnsibleInventoryHiearchyEntry]-[Constructors]' {
+    Describe '[AnsibleInventoryHierarchyEntry]-[Constructors]' {
     
-        It '[AnsibleInventoryHiearchyEntry]-[Constructor] - Parameterless should Not Throw' {
+        It '[AnsibleInventoryHierarchyEntry]-[Constructor] - Parameterless should Not Throw' {
     
             # -- Arrange
     
@@ -24,12 +24,12 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
             # -- Assert
     
-            { [AnsibleInventoryHiearchyEntry]::New() } | Should Not Throw 
+            { [AnsibleInventoryHierarchyEntry]::New() } | Should Not Throw 
     
         }# end of it block
     
     
-        It '[AnsibleInventoryHiearchyEntry]-[Constructor](Parent) should Not Throw' {
+        It '[AnsibleInventoryHierarchyEntry]-[Constructor](Parent) should Not Throw' {
     
             # -- Arrange
     
@@ -40,12 +40,12 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
             # -- Assert
     
-            { [AnsibleInventoryHiearchyEntry]::New($Parent) } | Should Not Throw 
+            { [AnsibleInventoryHierarchyEntry]::New($Parent) } | Should Not Throw 
     
         }# end of it block
     
     
-        It '[AnsibleInventoryHiearchyEntry]-[Constructor](Parent,Children) should Not Throw' {
+        It '[AnsibleInventoryHierarchyEntry]-[Constructor](Parent,Children) should Not Throw' {
     
             # -- Arrange
     
@@ -59,15 +59,15 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
             # -- Assert
     
-            { [AnsibleInventoryHiearchyEntry]::New($Parent, $Children) } | Should Not Throw 
+            { [AnsibleInventoryHierarchyEntry]::New($Parent, $Children) } | Should Not Throw 
     
         }# end of it block
     
     
     }# end of Describe block
-    Describe '[AnsibleInventoryHiearchyCollection]-[Constructors]' {
+    Describe '[AnsibleInventoryHierarchyCollection]-[Constructors]' {
     
-        It '[AnsibleInventoryHiearchyCollection]-[Constructor] - Parameterless should Not Throw' {
+        It '[AnsibleInventoryHierarchyCollection]-[Constructor] - Parameterless should Not Throw' {
     
             # -- Arrange
     
@@ -75,32 +75,32 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
             # -- Assert
     
-            { [AnsibleInventoryHiearchyCollection]::New() } | Should Not Throw 
+            { [AnsibleInventoryHierarchyCollection]::New() } | Should Not Throw 
     
         }# end of it block
     
     
-        It '[AnsibleInventoryHiearchyCollection]-[Constructor]([AnsibleInventoryHiearchyEntry[]]Entry) should Not Throw' {
+        It '[AnsibleInventoryHierarchyCollection]-[Constructor]([AnsibleInventoryHierarchyEntry[]]Entry) should Not Throw' {
     
             # -- Arrange
     
     
-            [AnsibleInventoryHiearchyEntry[]]$Entry = 'plop123'
+            [AnsibleInventoryHierarchyEntry[]]$Entry = 'plop123'
     
             # -- Act
     
             # -- Assert
     
-            { [AnsibleInventoryHiearchyCollection]::New($Entry) } | Should Not Throw 
+            { [AnsibleInventoryHierarchyCollection]::New($Entry) } | Should Not Throw 
     
         }# end of it block
     
     
     }# end of Describe block
-    Describe '[AnsibleInventoryHiearchyCollection]-[Methods]' {
+    Describe '[AnsibleInventoryHierarchyCollection]-[Methods]' {
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> AddEntry($Entry) :  - should Not Throw' {
+        It '[AnsibleInventoryHierarchyCollection] --> AddEntry($Entry) :  - should Not Throw' {
     
             # -- Arrange
     
@@ -108,7 +108,7 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
     
             # -- Assert
     
@@ -117,14 +117,14 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> AddEntry($Entry) :  - should not return a type [void]' {
+        It '[AnsibleInventoryHierarchyCollection] --> AddEntry($Entry) :  - should not return a type [void]' {
     
             # -- Arrange
             $Entry = 'plop'
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
             # -- Assert
     
             $Instance.AddEntry($Entry) | should be $null
@@ -132,13 +132,13 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> ConvertToIni() : [string] - should Not Throw' {
+        It '[AnsibleInventoryHierarchyCollection] --> ConvertToIni() : [string] - should Not Throw' {
     
             # -- Arrange
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
     
             # -- Assert
     
@@ -147,13 +147,13 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> ConvertToIni() : [string] - should return type [string]' {
+        It '[AnsibleInventoryHierarchyCollection] --> ConvertToIni() : [string] - should return type [string]' {
     
             # -- Arrange
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
             # -- Assert
     
             ($Instance.ConvertToIni()).GetType().Name | should be string
@@ -161,13 +161,13 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> CreateGrouping() : [AnsibleInventoryGrouping[]] - should Not Throw' {
+        It '[AnsibleInventoryHierarchyCollection] --> CreateGrouping() : [AnsibleInventoryGrouping[]] - should Not Throw' {
     
             # -- Arrange
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
     
             # -- Assert
     
@@ -176,13 +176,13 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
         } #End It Block
     
         #Public Method
-        It '[AnsibleInventoryHiearchyCollection] --> CreateGrouping() : [AnsibleInventoryGrouping[]] - should return type [AnsibleInventoryGrouping[]]' {
+        It '[AnsibleInventoryHierarchyCollection] --> CreateGrouping() : [AnsibleInventoryGrouping[]] - should return type [AnsibleInventoryGrouping[]]' {
     
             # -- Arrange
     
             # -- Act
     
-            $Instance = [AnsibleInventoryHiearchyCollection]::New()
+            $Instance = [AnsibleInventoryHierarchyCollection]::New()
             # -- Assert
     
             ($Instance.CreateGrouping()).GetType().Name | should be AnsibleInventoryGrouping[]

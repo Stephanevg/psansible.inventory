@@ -1,15 +1,15 @@
 
-Class AnsibleInventoryHiearchyEntry {
+Class AnsibleInventoryHierarchyEntry {
     $Parent
    [System.Collections.Generic.List[String]]$Children = [System.Collections.Generic.List[String]]::new()
 
-   AnsibleInventoryHiearchyEntry(){}
+   AnsibleInventoryHierarchyEntry(){}
 
-   AnsibleInventoryHiearchyEntry($Parent) {
+   AnsibleInventoryHierarchyEntry($Parent) {
        $This.Parent = $Parent
    }
 
-   AnsibleInventoryHiearchyEntry($Parent, $Children) {
+   AnsibleInventoryHierarchyEntry($Parent, $Children) {
 
        $this.Parent = $Parent
        $this.AddChild($Children)
@@ -46,16 +46,16 @@ Class AnsibleInventoryHiearchyEntry {
    }
 }
 
-Class AnsibleInventoryHiearchyCollection {
+Class AnsibleInventoryHierarchyCollection {
 
-   $Entries = [System.Collections.Generic.List[AnsibleInventoryHiearchyEntry[]]]::new()
+   $Entries = [System.Collections.Generic.List[AnsibleInventoryHierarchyEntry[]]]::new()
 
-   AnsibleInventoryHiearchyCollection() {
+   AnsibleInventoryHierarchyCollection() {
        
    }
 
    
-   AnsibleInventoryHiearchyCollection([AnsibleInventoryHiearchyEntry[]]$Entry) {
+   AnsibleInventoryHierarchyCollection([AnsibleInventoryHierarchyEntry[]]$Entry) {
        $this.Entries.Add($Entry)
    }
 

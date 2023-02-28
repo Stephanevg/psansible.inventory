@@ -1,4 +1,4 @@
-Function Import-AnsibleInventoryHiearchy {
+Function Import-AnsibleInventoryHierarchy {
     [CmdletBinding()]
     Param(
 
@@ -10,7 +10,7 @@ Function Import-AnsibleInventoryHiearchy {
         $rawData = import-csv -Path $Path.FullName -Delimiter ';'
         $Arch = @()
         Foreach ($Line in $rawData) {
-            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName $Line.Parent -Children ($Line.Children -split ",")
+            $Arch += New-AnsibleInventoryHierarchyEntry -ParentName $Line.Parent -Children ($Line.Children -split ",")
         }
 
         return $Arch
