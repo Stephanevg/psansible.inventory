@@ -1,6 +1,6 @@
 Class AnsibleInventory {
     [AnsibleInventoryEntryCollection]$EntryCollection = [AnsibleInventoryEntryCollection]::New()
-    [AnsibleInventoryHiearchyCollection] $Hiearchy = [AnsibleInventoryHiearchyCollection]::New()
+    [AnsibleInventoryHierarchyCollection] $Hierarchy = [AnsibleInventoryHierarchyCollection]::New()
     
     [AnsibleVariableCollection]$VariableCollection = [AnsibleVariableCollection]::New()
     [System.IO.DirectoryInfo]$Path
@@ -83,8 +83,8 @@ Class AnsibleInventory {
                 continue
             }
             If ($Item.HasChildren) {
-                $arch = New-AnsibleInventoryHiearchyEntry -ParentName $Item.Name -Children $Item.Members
-                $this.AddHiearchy($arch)
+                $arch = New-AnsibleInventoryHierarchyEntry -ParentName $Item.Name -Children $Item.Members
+                $this.AddHierarchy($arch)
                 $arch = $null
             }
             else {
@@ -186,15 +186,15 @@ Class AnsibleInventory {
 
     }
 
-    AnsibleInventory($Entries, $Hiearchy) {
+    AnsibleInventory($Entries, $Hierarchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy.AddEntry($Hiearchy)
+        $this.Hierarchy.AddEntry($Hierarchy)
 
     }
 
-    AddHiearchy($Hiearchy) {
-        $this.Hiearchy.AddEntry($Hiearchy)
+    AddHierarchy($Hierarchy) {
+        $this.Hierarchy.AddEntry($Hierarchy)
        
     }
 
@@ -208,7 +208,7 @@ Class AnsibleInventory {
     [String]ConvertArchToInI() {
 
         $FullString = ""
-        Foreach ($hier in $this.Hiearchy.Entries) {
+        Foreach ($hier in $this.Hierarchy.Entries) {
             $FullString += "[$($hier.Parent):children]`n"
             Foreach ($Child in $hier.children) {
                 $FullString += "$($Child)`n"
@@ -297,7 +297,7 @@ Class AnsibleInventory {
 
     CreateGroupings(){
         $AllGroups = @()
-        $AllGroups += $this.Hiearchy.CreateGrouping()
+        $AllGroups += $this.Hierarchy.CreateGrouping()
         $AllGroups += $this.EntryCollection.CreateGrouping()
         $GroupingCollection = [AnsibleInventoryGroupingCollection]::new()
         foreach($grp in $AllGroups){

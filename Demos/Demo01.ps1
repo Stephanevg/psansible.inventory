@@ -9,15 +9,15 @@ import-module psansible.inventory
 $Inventory = New-AnsibleInventory
 $Inventory
 
-#Creating Hiearchy
+#Creating Hierarchy
 
 $Arch = @()
 
-$Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_prod_servers" -Children "all_hr_servers","all_marketing_servers","all_database_servers"
-$Arch += New-AnsibleInventoryHiearchyEntry -ParentName "all_database_servers" -Children "all_mongodb_servers","all_postgres_servers"
+$Arch += New-AnsibleInventoryHierarchyEntry -ParentName "all_prod_servers" -Children "all_hr_servers","all_marketing_servers","all_database_servers"
+$Arch += New-AnsibleInventoryHierarchyEntry -ParentName "all_database_servers" -Children "all_mongodb_servers","all_postgres_servers"
 $Arch
 
-$Inventory.AddHiearchy($Arch)
+$Inventory.AddHierarchy($Arch)
 
 <#
     Working with Variables
