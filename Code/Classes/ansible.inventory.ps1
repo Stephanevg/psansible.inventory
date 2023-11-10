@@ -231,12 +231,6 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    [String]ConvertArchToJson() {
-        $FullString = $this.Hiearchy | ConvertTo-Json
-        
-        return $FullString
-    }
-
     AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
