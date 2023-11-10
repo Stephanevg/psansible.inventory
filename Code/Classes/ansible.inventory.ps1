@@ -11,7 +11,6 @@ Class AnsibleInventory {
     [System.IO.DirectoryInfo]$Path
     [AnsibleInventoryGroupingCollection]$GroupCollection = [AnsibleInventoryGroupingCollection]::New()
     [AnsibleInventoryOutputType]$OutputType = "INI"
-    hidden $JSONConverted
 
 
     AnsibleInventory() {

@@ -1,4 +1,4 @@
-#Generated at 11/09/2023 16:37:45 by Stephane van Gulick
+#Generated at 11/10/2023 08:41:05 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -335,7 +335,6 @@ Class AnsibleInventory {
     [System.IO.DirectoryInfo]$Path
     [AnsibleInventoryGroupingCollection]$GroupCollection = [AnsibleInventoryGroupingCollection]::New()
     [AnsibleInventoryOutputType]$OutputType = "INI"
-    hidden $JSONConverted
 
 
     AnsibleInventory() {
