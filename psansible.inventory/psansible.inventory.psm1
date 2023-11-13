@@ -1,4 +1,4 @@
-#Generated at 11/10/2023 08:41:05 by Stephane van Gulick
+#Generated at 11/13/2023 13:10:29 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -555,12 +555,6 @@ Class AnsibleInventory {
         Return $FullString
     }
 
-    [String]ConvertArchToJson() {
-        $FullString = $this.Hiearchy | ConvertTo-Json
-        
-        return $FullString
-    }
-
     AddGrouping($Grouping) {
         $this.GroupCollection.AddGrouping($Grouping)
     }
@@ -606,7 +600,7 @@ Class AnsibleInventory {
         }
     }
 
-    Export($OutputType) {
+    Export() {
 
         $this.CreateGroupings()
 
@@ -655,33 +649,7 @@ Class AnsibleInventory {
         }
 
         
-    }
-
-    Export() {
-
-        $this.CreateGroupings()
-
-        If (!($this.Path.Exists)) {
-            $this.path.Create()
-            $this.Path.Refresh()
-        }
-
-        
-        
-        [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
-                
-        If (!($InventoryFile.Exists)) {
-            $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
-            $InventoryFile.Refresh()
-        }
-
-        $IniContent = $this.ConvertToIni()
-        Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
-
-        if ($this.VariableCollection) {
-            $This.VariableCollection.Export()
-        }
-    }
+    } 
 
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()
@@ -882,6 +850,22 @@ Class AnsibleVariableCollection {
         $TempVars = $This.Variables | ? { $_.ContainerName -eq $ContainerName }
         Return $TempVars
     }
+}
+Function Export-AnsibleInventory {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory = $true)]
+        [System.IO.DirectoryInfo]$Path,
+        [Parameter(Mandatory = $true)]
+        [string]$OutputType = "INI",
+        [Parameter(Mandatory = $true)]
+        [AnsibleInventory]$Inventory
+    )
+
+    $Inventory.SetOutputType($OutputType)
+    $Inventory.SetPath($Path.FullName)
+    $Inventory.Export()
+
 }
 Function Import-AnsibleInventory {
     [CmdletBinding()]
