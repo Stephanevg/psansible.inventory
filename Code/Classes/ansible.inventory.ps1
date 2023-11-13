@@ -276,7 +276,7 @@ Class AnsibleInventory {
         }
     }
 
-    Export($OutputType) {
+    Export() {
 
         $this.CreateGroupings()
 
@@ -325,33 +325,7 @@ Class AnsibleInventory {
         }
 
         
-    }
-
-    Export() {
-
-        $this.CreateGroupings()
-
-        If (!($this.Path.Exists)) {
-            $this.path.Create()
-            $this.Path.Refresh()
-        }
-
-        
-        
-        [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
-                
-        If (!($InventoryFile.Exists)) {
-            $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
-            $InventoryFile.Refresh()
-        }
-
-        $IniContent = $this.ConvertToIni()
-        Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
-
-        if ($this.VariableCollection) {
-            $This.VariableCollection.Export()
-        }
-    }
+    } 
 
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()

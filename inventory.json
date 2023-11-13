@@ -1,0 +1,10 @@
+{
+  "Test": {
+    "hosts": [
+      "Node1"
+    ]
+  },
+  "_meta": {
+    "host_vars": ""
+  }
+}

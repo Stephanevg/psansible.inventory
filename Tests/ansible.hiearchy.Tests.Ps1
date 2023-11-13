@@ -7,9 +7,11 @@ $RootFolder = (get-item $TestsPath).Parent
 $path = Join-Path -Path $RootFolder.FullName -ChildPath 'psansible.inventory'
 
 
-Push-Location -Path $Path
+$Location = Get-Location
 
-ipmo psansible.inventory.psm1 -Force
+Set-Location -Path $Path
+
+ipmo ./psansible.inventory.psm1 -Force
 
 #endregion Header
 InModuleScope -ModuleName psansible.inventory -ScriptBlock {
@@ -192,4 +194,4 @@ InModuleScope -ModuleName psansible.inventory -ScriptBlock {
     }#EndDescribeBlock
 }
 
-
+Set-Location $Location
