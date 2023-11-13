@@ -1,3 +1,8 @@
+Enum AnsibleInventoryOutputType {
+    INI
+    JSON
+}
+
 Class AnsibleInventory {
     [AnsibleInventoryEntryCollection]$EntryCollection = [AnsibleInventoryEntryCollection]::New()
     [AnsibleInventoryHiearchyCollection] $Hiearchy = [AnsibleInventoryHiearchyCollection]::New()
@@ -5,6 +10,8 @@ Class AnsibleInventory {
     [AnsibleVariableCollection]$VariableCollection = [AnsibleVariableCollection]::New()
     [System.IO.DirectoryInfo]$Path
     [AnsibleInventoryGroupingCollection]$GroupCollection = [AnsibleInventoryGroupingCollection]::New()
+    [AnsibleInventoryOutputType]$OutputType = "INI"
+
 
     AnsibleInventory() {
 
@@ -205,6 +212,10 @@ Class AnsibleInventory {
         }
     }
 
+    [void] SetOutputType([AnsibleInventoryOutputType]$OutputType){
+        $this.OutputType = $OutputType
+    }
+
     [String]ConvertArchToInI() {
 
         $FullString = ""
@@ -274,22 +285,47 @@ Class AnsibleInventory {
             $this.Path.Refresh()
         }
 
+        if($this.OutputType -eq "INI"){
+            [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
+                
+            If (!($InventoryFile.Exists)) {
+                $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
+                $InventoryFile.Refresh()
+            }
+
+            $IniContent = $this.ConvertToIni()
+            Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
+
+            if ($this.VariableCollection) {
+                $This.VariableCollection.Export()
+            }
+        }elseif ($this.OutputType -eq "JSON") {
+            [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.json"
+             
+            $RootHashTable = @{}
+
+            $RootHashTable._meta = @{
+                host_vars = ""
+            }
+
+            foreach($Group in $this.GroupCollection.groups.name){
+                $RootHashTable.$Group = @{}
+                if(($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members -gt 0){
+                    $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
+                }
+                if($this.Hiearchy.Entries.Parent -contains $Group){
+                    $RootHashTable.$Group.children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $Group}).Children
+                    $RootHashTable.$Group.Remove("hosts")
+                }
+            }
+
+            $JsonContent = $RootHashTable | ConvertTo-Json -Depth 10
+            
+            Set-Content -Path $InventoryFile.FullName -Value $JsonContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
+        }
 
         
-        [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
-                
-        If (!($InventoryFile.Exists)) {
-            $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
-            $InventoryFile.Refresh()
-        }
-
-        $IniContent = $this.ConvertToIni()
-        Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
-
-        if ($this.VariableCollection) {
-            $This.VariableCollection.Export()
-        }
-    }
+    } 
 
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()
