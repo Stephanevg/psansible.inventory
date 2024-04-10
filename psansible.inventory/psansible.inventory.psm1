@@ -1,4 +1,4 @@
-#Generated at 11/13/2023 13:10:29 by Stephane van Gulick
+#Generated at 11/15/2023 11:12:41 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -638,7 +638,15 @@ Class AnsibleInventory {
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
                 if($this.Hiearchy.Entries.Parent -contains $Group){
-                    $RootHashTable.$Group.children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $Group}).Children
+                    foreach($hiearchyentry in $this.Hiearchy.Entries){
+                        if($null -eq $hiearchyentry.children){
+                            $RootHashTable.$($hiearchyentry.Parent) = @{}
+                            $RootHashTable.$($hiearchyentry.Parent).children = @()
+                        }else{
+                            $RootHashTable.$($hiearchyentry.Parent).children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $($hiearchyentry.Parent)}).Children 
+                        }
+                    }
+                    
                     $RootHashTable.$Group.Remove("hosts")
                 }
             }
@@ -856,8 +864,8 @@ Function Export-AnsibleInventory {
     Param(
         [Parameter(Mandatory = $true)]
         [System.IO.DirectoryInfo]$Path,
-        [Parameter(Mandatory = $true)]
-        [string]$OutputType = "INI",
+        [Parameter(Mandatory = $false)]
+        [AnsibleInventoryOutputType]$OutputType = "INI",
         [Parameter(Mandatory = $true)]
         [AnsibleInventory]$Inventory
     )

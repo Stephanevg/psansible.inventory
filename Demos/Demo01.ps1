@@ -56,3 +56,6 @@ Export-AnsibleInventory -Inventory $Inventory -OutputType INI -Path './Inventori
 
 #Export the Inventory to JSON format
 Export-AnsibleInventory -Inventory $Inventory -OutputType JSON -Path './Inventories/Windows/'
+
+#Export the Inventory to ini per default
+Export-AnsibleInventory -Inventory $Inventory -Path './Inventories/Windows/'

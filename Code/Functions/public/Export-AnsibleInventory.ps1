@@ -3,8 +3,8 @@ Function Export-AnsibleInventory {
     Param(
         [Parameter(Mandatory = $true)]
         [System.IO.DirectoryInfo]$Path,
-        [Parameter(Mandatory = $true)]
-        [string]$OutputType = "INI",
+        [Parameter(Mandatory = $false)]
+        [AnsibleInventoryOutputType]$OutputType = "INI",
         [Parameter(Mandatory = $true)]
         [AnsibleInventory]$Inventory
     )
