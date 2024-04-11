@@ -1,3 +1,4 @@
+Function Export-AnsibleInventory {
 <#
 .SYNOPSIS
 Exports an Ansible inventory to a specified directory in the specified format.
@@ -19,7 +20,6 @@ Export-AnsibleInventory -Path "C:\Ansible\Inventory" -OutputType "YAML" -Invento
 Exports the Ansible inventory object $MyInventory to the directory "C:\Ansible\Inventory" in YAML format.
 
 #>
-Function Export-AnsibleInventory {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true)]
