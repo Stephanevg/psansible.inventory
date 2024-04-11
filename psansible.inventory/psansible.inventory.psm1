@@ -1,4 +1,4 @@
-#Generated at 11/15/2023 11:12:41 by Stephane van Gulick
+#Generated at 04/11/2024 10:30:05 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -638,15 +638,7 @@ Class AnsibleInventory {
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
                 if($this.Hiearchy.Entries.Parent -contains $Group){
-                    foreach($hiearchyentry in $this.Hiearchy.Entries){
-                        if($null -eq $hiearchyentry.children){
-                            $RootHashTable.$($hiearchyentry.Parent) = @{}
-                            $RootHashTable.$($hiearchyentry.Parent).children = @()
-                        }else{
-                            $RootHashTable.$($hiearchyentry.Parent).children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $($hiearchyentry.Parent)}).Children 
-                        }
-                    }
-                    
+                    $RootHashTable.$Group.children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $Group}).Children
                     $RootHashTable.$Group.Remove("hosts")
                 }
             }
@@ -859,6 +851,27 @@ Class AnsibleVariableCollection {
         Return $TempVars
     }
 }
+<#
+.SYNOPSIS
+Exports an Ansible inventory to a specified directory in the specified format.
+
+.DESCRIPTION
+This function exports an Ansible inventory to the specified directory in the specified format. It allows users to customize the output format and directory path.
+
+.PARAMETER Path
+Specifies the directory where the Ansible inventory file will be exported. This parameter is mandatory.
+
+.PARAMETER OutputType
+Specifies the format of the exported inventory file. Default is "INI". This parameter is optional.
+
+.PARAMETER Inventory
+Specifies the Ansible inventory object to be exported. This parameter is mandatory.
+
+.EXAMPLE
+Export-AnsibleInventory -Path "C:\Ansible\Inventory" -OutputType "YAML" -Inventory $MyInventory
+Exports the Ansible inventory object $MyInventory to the directory "C:\Ansible\Inventory" in YAML format.
+
+#>
 Function Export-AnsibleInventory {
     [CmdletBinding()]
     Param(
