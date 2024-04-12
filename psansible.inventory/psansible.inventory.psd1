@@ -100,7 +100,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'PSEdition_Core','PSEdition_Desktop','Ansible','Automation','Controller','AnsibleAutomationController','Ansible inventory'
+        Tags = 'PSEdition_Core','PSEdition_Desktop','Ansible','inventory','Automation','Controller','AnsibleAutomationController'
 
         # A URL to the license for this module.
         # LicenseUri = ''
