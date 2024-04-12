@@ -30,10 +30,10 @@ CompanyName = 'District'
 Copyright = '(c) stephanevg. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Helpers for Ansible inventory automation'
+Description = 'Ansible inventory automation framework'
 
 # Minimum version of the PowerShell engine required by this module
-PowerShellVersion = '5.1'
+PowerShellVersion = '6.0'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -100,19 +100,19 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'PSEdition_Core','PSEdition_Desktop','pshtml','html','web'
+        Tags = 'PSEdition_Core','PSEdition_Desktop','Ansible','Ansible Automation Controller','Ansible inventory'
 
         # A URL to the license for this module.
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+            ProjectUri = 'https://github.com/Stephanevg/psansible.inventory'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+            ReleaseNotes = 'https://github.com/Stephanevg/RELEASE_NOTES.md'
 
         # Prerelease string of this module
         # Prerelease = ''
