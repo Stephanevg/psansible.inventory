@@ -1,4 +1,4 @@
-#Generated at 10/04/2021 08:55:56 by Stephane van Gulick
+#Generated at 04/12/2024 09:15:27 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -322,6 +322,11 @@ Class AnsibleInventoryHiearchyCollection {
    }
 
 }
+Enum AnsibleInventoryOutputType {
+    INI
+    JSON
+}
+
 Class AnsibleInventory {
     [AnsibleInventoryEntryCollection]$EntryCollection = [AnsibleInventoryEntryCollection]::New()
     [AnsibleInventoryHiearchyCollection] $Hiearchy = [AnsibleInventoryHiearchyCollection]::New()
@@ -329,6 +334,8 @@ Class AnsibleInventory {
     [AnsibleVariableCollection]$VariableCollection = [AnsibleVariableCollection]::New()
     [System.IO.DirectoryInfo]$Path
     [AnsibleInventoryGroupingCollection]$GroupCollection = [AnsibleInventoryGroupingCollection]::New()
+    [AnsibleInventoryOutputType]$OutputType = "INI"
+
 
     AnsibleInventory() {
 
@@ -432,8 +439,8 @@ Class AnsibleInventory {
 
         #Getting variables
 
-        [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "group_vars"
-        [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "hosts_vars"
+        [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path (Split-Path $this.Path.FullName -Parent) -ChildPath "group_vars"
+        [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path (Split-Path $this.Path.FullName -Parent) -ChildPath "hosts_vars"
 
         
 
@@ -529,6 +536,10 @@ Class AnsibleInventory {
         }
     }
 
+    [void] SetOutputType([AnsibleInventoryOutputType]$OutputType){
+        $this.OutputType = $OutputType
+    }
+
     [String]ConvertArchToInI() {
 
         $FullString = ""
@@ -558,7 +569,7 @@ Class AnsibleInventory {
 
     [Object]GetGroups() {
 
-        return $this.Groups
+        return $this.GroupCollection
     }
 
     [String]ConvertGroupsToIni() {
@@ -598,22 +609,47 @@ Class AnsibleInventory {
             $this.Path.Refresh()
         }
 
+        if($this.OutputType -eq "INI"){
+            [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
+                
+            If (!($InventoryFile.Exists)) {
+                $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
+                $InventoryFile.Refresh()
+            }
+
+            $IniContent = $this.ConvertToIni()
+            Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
+
+            if ($this.VariableCollection) {
+                $This.VariableCollection.Export()
+            }
+        }elseif ($this.OutputType -eq "JSON") {
+            [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.json"
+             
+            $RootHashTable = @{}
+
+            $RootHashTable._meta = @{
+                host_vars = ""
+            }
+
+            foreach($Group in $this.GroupCollection.groups.name){
+                $RootHashTable.$Group = @{}
+                if(($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members -gt 0){
+                    $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
+                }
+                if($this.Hiearchy.Entries.Parent -contains $Group){
+                    $RootHashTable.$Group.children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $Group}).Children
+                    $RootHashTable.$Group.Remove("hosts")
+                }
+            }
+
+            $JsonContent = $RootHashTable | ConvertTo-Json -Depth 10
+            
+            Set-Content -Path $InventoryFile.FullName -Value $JsonContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
+        }
 
         
-        [System.IO.FileInfo]$InventoryFile = Join-Path -Path $This.Path.FullName -ChildPath "inventory.ini"
-                
-        If (!($InventoryFile.Exists)) {
-            $Null = New-Item -ItemType File -Path $InventoryFile.FullName -Force
-            $InventoryFile.Refresh()
-        }
-
-        $IniContent = $this.ConvertToIni()
-        Set-Content -Path $InventoryFile.FullName -Value $IniContent -Force -Encoding utf8NoBOM #utf8NoBOM is Only available on PS7
-
-        if ($this.VariableCollection) {
-            $This.VariableCollection.Export()
-        }
-    }
+    } 
 
     [System.Collections.Generic.List[AnsibleInventoryEntry]] GetEntries() {
         return $this.EntryCollection.GetEntries()
@@ -814,6 +850,43 @@ Class AnsibleVariableCollection {
         $TempVars = $This.Variables | ? { $_.ContainerName -eq $ContainerName }
         Return $TempVars
     }
+}
+Function Export-AnsibleInventory {
+<#
+.SYNOPSIS
+Exports an Ansible inventory to a specified directory in the specified format.
+
+.DESCRIPTION
+This function exports an Ansible inventory to the specified directory in the specified format. It allows users to customize the output format and directory path.
+
+.PARAMETER Path
+Specifies the directory where the Ansible inventory file will be exported. This parameter is mandatory.
+
+.PARAMETER OutputType
+Specifies the format of the exported inventory file. Default is "INI". This parameter is optional.
+
+.PARAMETER Inventory
+Specifies the Ansible inventory object to be exported. This parameter is mandatory.
+
+.EXAMPLE
+Export-AnsibleInventory -Path "C:\Ansible\Inventory" -OutputType "YAML" -Inventory $MyInventory
+Exports the Ansible inventory object $MyInventory to the directory "C:\Ansible\Inventory" in YAML format.
+
+#>
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory = $true)]
+        [System.IO.DirectoryInfo]$Path,
+        [Parameter(Mandatory = $false)]
+        [AnsibleInventoryOutputType]$OutputType = "INI",
+        [Parameter(Mandatory = $true)]
+        [AnsibleInventory]$Inventory
+    )
+
+    $Inventory.SetOutputType($OutputType)
+    $Inventory.SetPath($Path.FullName)
+    $Inventory.Export()
+
 }
 Function Import-AnsibleInventory {
     [CmdletBinding()]

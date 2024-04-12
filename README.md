@@ -121,11 +121,22 @@ Children                 Parent
 
 ## Exporting the inventory
 
-The most simplest way of generating an inventory would be as followed
+The most simplest way of generating an inventory would be as followed.
+
+Export Inventory to ini:
 
 ```powershell
 
 $Inventory = New-AnsibleInventory
-$Inventory.Export()
+Export-AnsibleInventory -Inventory $Inventory -OutputType INI -Path './Inventories/Windows/'
+
+```
+
+Export Inventory to json:
+
+```powershell
+
+$Inventory = New-AnsibleInventory
+Export-AnsibleInventory -Inventory $Inventory -OutputType json -Path './Inventories/Windows/'
 
 ```

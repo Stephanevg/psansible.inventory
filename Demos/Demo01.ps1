@@ -51,13 +51,11 @@ $VariableCollection.GetVariableFromContainer('Node0055620.Node-005.dev.woop.net'
 
 $Inventory.SetVariableCollection($VariableCollection)
 
+#Export the Inventory to INI format
+Export-AnsibleInventory -Inventory $Inventory -OutputType INI -Path './Inventories/Windows/'
 
-#Exporting the data
-$Inventory.SetPath('./Inventories/Windows/')
+#Export the Inventory to JSON format
+Export-AnsibleInventory -Inventory $Inventory -OutputType JSON -Path './Inventories/Windows/'
 
-$Inventory.Export()
-
-
-
-
-
+#Export the Inventory to ini per default
+Export-AnsibleInventory -Inventory $Inventory -Path './Inventories/Windows/'
