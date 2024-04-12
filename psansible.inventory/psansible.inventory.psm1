@@ -1,4 +1,4 @@
-#Generated at 04/11/2024 10:36:21 by Stephane van Gulick
+#Generated at 04/12/2024 09:15:27 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -439,8 +439,8 @@ Class AnsibleInventory {
 
         #Getting variables
 
-        [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "group_vars"
-        [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path $this.Path.Directory -ChildPath "hosts_vars"
+        [System.IO.DirectoryInfo]$group_vars_folder = join-Path -Path (Split-Path $this.Path.FullName -Parent) -ChildPath "group_vars"
+        [System.IO.DirectoryInfo]$hosts_vars_folder = join-Path -Path (Split-Path $this.Path.FullName -Parent) -ChildPath "hosts_vars"
 
         
 
@@ -569,7 +569,7 @@ Class AnsibleInventory {
 
     [Object]GetGroups() {
 
-        return $this.Groups
+        return $this.GroupCollection
     }
 
     [String]ConvertGroupsToIni() {

@@ -272,7 +272,7 @@ three.example.com
         } #End It Block
 
         #Public Method
-        It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [List1]' {
+        It '[AnsibleInventory] --> GetGroups() : [Object] - should return type [AnsibleInventoryGroupingCollection]' {
 
             # -- Arrange
 
@@ -293,7 +293,7 @@ three.example.com
             $Instance.CreateGroupings()
             # -- Assert
 
-            ($Instance.GetGroups()).GetType().Name | should be 'List`1'
+            ($Instance.GetGroups()).GetType().Name | should be 'AnsibleInventoryGroupingCollection'
 
         } #End It Block
 
