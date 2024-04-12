@@ -14,7 +14,7 @@ Currently, the following scenarios are supported:
 - Inventory structure *import/manage/export*
 - Inventory entries *(Read/edit/write)*
 - Inventory groups *(Read/edit/write)*
-- Hiearchy definitions *(Read/edit/write)*
+- Hierarchy definitions *(Read/edit/write)*
 - group vars *(Read/edit/write)*
 - host vars *(Read/edit/write)*
 
@@ -54,7 +54,7 @@ New-AnsibleInventory
 #return
 
 EntryCollection    : TotalEntries: 0
-Hiearchy           : AnsibleInventoryHiearchyCollection
+Hierarchy           : AnsibleInventoryHierarchyCollection
 VariableCollection : AnsibleVariableCollection
 GroupCollection    : 
 Path               : 
@@ -105,13 +105,13 @@ Name   Value VarType ContainerName
 mydata 456     Group HR_Servers
 ```
 
-## Working with Hiearchy definitions
+## Working with Hierarchy definitions
 
-The following example shows how to create a simple hiearchy. Both `HR_Servers` and `MK_Servers` are child groups of `prod`.
+The following example shows how to create a simple Hierarchy. Both `HR_Servers` and `MK_Servers` are child groups of `prod`.
 
 ```powershell
 
-New-AnsibleInventoryHiearchyEntry -ParentName "prod" -Children "HR_Servers","MK_Servers"
+New-AnsibleInventoryHierarchyEntry -ParentName "prod" -Children "HR_Servers","MK_Servers"
 
 
 Children                 Parent

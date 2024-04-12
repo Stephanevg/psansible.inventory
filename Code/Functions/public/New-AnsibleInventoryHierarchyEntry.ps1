@@ -1,4 +1,4 @@
-Function New-AnsibleInventoryHiearchyEntry {
+Function New-AnsibleInventoryHierarchyEntry {
     [Cmdletbinding()]
     Param(
         [Parameter(Mandatory = $true)]
@@ -9,7 +9,7 @@ Function New-AnsibleInventoryHiearchyEntry {
 
     )
 
-    $h = [AnsibleInventoryHiearchyEntry]::New($ParentName)
+    $h = [AnsibleInventoryHierarchyEntry]::New($ParentName)
 
     If ($Children) {
         $h.AddChild($Children)

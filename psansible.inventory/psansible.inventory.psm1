@@ -212,17 +212,17 @@ Class AnsibleInventoryGroupingCollection {
     }
 }
 
-Class AnsibleInventoryHiearchyEntry {
+Class AnsibleInventoryHierarchyEntry {
     $Parent
    [System.Collections.Generic.List[String]]$Children = [System.Collections.Generic.List[String]]::new()
 
-   AnsibleInventoryHiearchyEntry(){}
+   AnsibleInventoryHierarchyEntry(){}
 
-   AnsibleInventoryHiearchyEntry($Parent) {
+   AnsibleInventoryHierarchyEntry($Parent) {
        $This.Parent = $Parent
    }
 
-   AnsibleInventoryHiearchyEntry($Parent, $Children) {
+   AnsibleInventoryHierarchyEntry($Parent, $Children) {
 
        $this.Parent = $Parent
        $this.AddChild($Children)
@@ -259,16 +259,16 @@ Class AnsibleInventoryHiearchyEntry {
    }
 }
 
-Class AnsibleInventoryHiearchyCollection {
+Class AnsibleInventoryHierarchyCollection {
 
-   $Entries = [System.Collections.Generic.List[AnsibleInventoryHiearchyEntry[]]]::new()
+   $Entries = [System.Collections.Generic.List[AnsibleInventoryHierarchyEntry[]]]::new()
 
-   AnsibleInventoryHiearchyCollection() {
+   AnsibleInventoryHierarchyCollection() {
        
    }
 
    
-   AnsibleInventoryHiearchyCollection([AnsibleInventoryHiearchyEntry[]]$Entry) {
+   AnsibleInventoryHierarchyCollection([AnsibleInventoryHierarchyEntry[]]$Entry) {
        $this.Entries.Add($Entry)
    }
 
@@ -329,7 +329,7 @@ Enum AnsibleInventoryOutputType {
 
 Class AnsibleInventory {
     [AnsibleInventoryEntryCollection]$EntryCollection = [AnsibleInventoryEntryCollection]::New()
-    [AnsibleInventoryHiearchyCollection] $Hiearchy = [AnsibleInventoryHiearchyCollection]::New()
+    [AnsibleInventoryHierarchyCollection] $Hierarchy = [AnsibleInventoryHierarchyCollection]::New()
     
     [AnsibleVariableCollection]$VariableCollection = [AnsibleVariableCollection]::New()
     [System.IO.DirectoryInfo]$Path
@@ -414,8 +414,8 @@ Class AnsibleInventory {
                 continue
             }
             If ($Item.HasChildren) {
-                $arch = New-AnsibleInventoryHiearchyEntry -ParentName $Item.Name -Children $Item.Members
-                $this.AddHiearchy($arch)
+                $arch = New-AnsibleInventoryHierarchyEntry -ParentName $Item.Name -Children $Item.Members
+                $this.AddHierarchy($arch)
                 $arch = $null
             }
             else {
@@ -517,15 +517,15 @@ Class AnsibleInventory {
 
     }
 
-    AnsibleInventory($Entries, $Hiearchy) {
+    AnsibleInventory($Entries, $Hierarchy) {
         
         $this.AddInventoryEntry($Entries)
-        $this.Hiearchy.AddEntry($Hiearchy)
+        $this.Hierarchy.AddEntry($Hierarchy)
 
     }
 
-    AddHiearchy($Hiearchy) {
-        $this.Hiearchy.AddEntry($Hiearchy)
+    AddHierarchy($Hierarchy) {
+        $this.Hierarchy.AddEntry($Hierarchy)
        
     }
 
@@ -543,7 +543,7 @@ Class AnsibleInventory {
     [String]ConvertArchToInI() {
 
         $FullString = ""
-        Foreach ($hier in $this.Hiearchy.Entries) {
+        Foreach ($hier in $this.Hierarchy.Entries) {
             $FullString += "[$($hier.Parent):children]`n"
             Foreach ($Child in $hier.children) {
                 $FullString += "$($Child)`n"
@@ -637,8 +637,8 @@ Class AnsibleInventory {
                 if(($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members -gt 0){
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
-                if($this.Hiearchy.Entries.Parent -contains $Group){
-                    $RootHashTable.$Group.children = ($this.Hiearchy.Entries | ?{$_.Parent -eq $Group}).Children
+                if($this.Hierarchy.Entries.Parent -contains $Group){
+                    $RootHashTable.$Group.children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $Group}).Children
                     $RootHashTable.$Group.Remove("hosts")
                 }
             }
@@ -657,7 +657,7 @@ Class AnsibleInventory {
 
     CreateGroupings(){
         $AllGroups = @()
-        $AllGroups += $this.Hiearchy.CreateGrouping()
+        $AllGroups += $this.Hierarchy.CreateGrouping()
         $AllGroups += $this.EntryCollection.CreateGrouping()
         $GroupingCollection = [AnsibleInventoryGroupingCollection]::new()
         foreach($grp in $AllGroups){
@@ -898,7 +898,7 @@ Function Import-AnsibleInventory {
 
     REturn $Inv
 }
-Function Import-AnsibleInventoryHiearchy {
+Function Import-AnsibleInventoryHierarchy {
     [CmdletBinding()]
     Param(
 
@@ -910,7 +910,7 @@ Function Import-AnsibleInventoryHiearchy {
         $rawData = import-csv -Path $Path.FullName -Delimiter ';'
         $Arch = @()
         Foreach ($Line in $rawData) {
-            $Arch += New-AnsibleInventoryHiearchyEntry -ParentName $Line.Parent -Children ($Line.Children -split ",")
+            $Arch += New-AnsibleInventoryHierarchyEntry -ParentName $Line.Parent -Children ($Line.Children -split ",")
         }
 
         return $Arch
@@ -969,7 +969,7 @@ Function New-AnsibleInventoryGroupingCollection {
     )
     return [AnsibleInventoryGroupingCollection]::New()
 }
-Function New-AnsibleInventoryHiearchyEntry {
+Function New-AnsibleInventoryHierarchyEntry {
     [Cmdletbinding()]
     Param(
         [Parameter(Mandatory = $true)]
@@ -980,7 +980,7 @@ Function New-AnsibleInventoryHiearchyEntry {
 
     )
 
-    $h = [AnsibleInventoryHiearchyEntry]::New($ParentName)
+    $h = [AnsibleInventoryHierarchyEntry]::New($ParentName)
 
     If ($Children) {
         $h.AddChild($Children)
