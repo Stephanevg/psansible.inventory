@@ -1,4 +1,4 @@
-#Generated at 04/12/2024 09:15:27 by Stephane van Gulick
+#Generated at 04/15/2024 10:04:49 by Stephane van Gulick
 
 
 Class AnsibleInventoryEntry {
@@ -638,7 +638,15 @@ Class AnsibleInventory {
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
                 if($this.Hierarchy.Entries.Parent -contains $Group){
-                    $RootHashTable.$Group.children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $Group}).Children
+                    foreach($Hierarchyentry in $this.Hierarchy.Entries){
+                        if($null -eq $Hierarchyentry.children){
+                            $RootHashTable.$($Hierarchyentry.Parent) = @{}
+                            $RootHashTable.$($Hierarchyentry.Parent).children = @()
+                        }else{
+                            $RootHashTable.$($Hierarchyentry.Parent).children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $($Hierarchyentry.Parent)}).Children 
+                        }
+                    }
+                    
                     $RootHashTable.$Group.Remove("hosts")
                 }
             }

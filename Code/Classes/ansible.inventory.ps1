@@ -314,7 +314,15 @@ Class AnsibleInventory {
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
                 if($this.Hierarchy.Entries.Parent -contains $Group){
-                    $RootHashTable.$Group.children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $Group}).Children
+                    foreach($Hierarchyentry in $this.Hierarchy.Entries){
+                        if($null -eq $Hierarchyentry.children){
+                            $RootHashTable.$($Hierarchyentry.Parent) = @{}
+                            $RootHashTable.$($Hierarchyentry.Parent).children = @()
+                        }else{
+                            $RootHashTable.$($Hierarchyentry.Parent).children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $($Hierarchyentry.Parent)}).Children 
+                        }
+                    }
+                    
                     $RootHashTable.$Group.Remove("hosts")
                 }
             }
