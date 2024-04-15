@@ -659,6 +659,24 @@ three.example.com
             $result._meta.Host_vars.length | Should -Be 0
         }
 
+         # Test that the empty childgroups are not shown as null, but as an empty json array ("[]") if output type is 'json' fixing issue https://github.com/Stephanevg/psansible.inventory/issues/15
+         It '[AnsibleInventory] -->  Export() : - should return correct inventory structure in json' {
+            # Arrange
+            $Instance = New-AnsibleInventory
+            $Instance.SetPath($TestDrive)
+            $Entry = New-AnsibleInventoryEntry -NodeName "Node1" -Group "Test"
+            $Hierarchyentry = New-AnsibleInventoryHierarchyEntry -Parent "Parent" -Child $null
+            $Instance.AddHierarchy($Hierarchyentry)
+            $Instance.AddInventoryEntry($Entry)
+            $Instance.SetOutputType("JSON")
+            $Instance.Export()
+
+            $result = Get-Content (Join-Path -Path $TestDrive -ChildPath 'inventory.json') -Raw | ConvertFrom-Json
+
+            # Assert
+            $result.Parent.children.GetType().BaseType.Name | Should -Be "Array"
+        }
+
     }
 }
 
