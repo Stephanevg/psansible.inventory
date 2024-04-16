@@ -1,4 +1,7 @@
-#Release Notes
+# Release Notes
+
+## v0.2.1
+- Bugfix [#15](https://github.com/Stephanevg/psansible.inventory/issues/15)
 
 ## v0.2.0
 - Breaking change: fix typo: hiearchy to hierarchy #9
