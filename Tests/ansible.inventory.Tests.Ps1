@@ -1,6 +1,8 @@
 
 #region Header
 
+Import-Module Pester -RequiredVersion 4.9.0
+
 $TestsPath = Split-Path $MyInvocation.MyCommand.Path
 
 $RootFolder = (get-item $TestsPath).Parent
@@ -660,7 +662,7 @@ three.example.com
         }
 
          # Test that the empty childgroups are not shown as null, but as an empty json array ("[]") if output type is 'json' fixing issue https://github.com/Stephanevg/psansible.inventory/issues/15
-         It '[AnsibleInventory] -->  Export() : - should return correct inventory structure in json' {
+         It '[AnsibleInventory] -->  Export() : - should return empty child attribute as array in json' {
             # Arrange
             $Instance = New-AnsibleInventory
             $Instance.SetPath($TestDrive)
@@ -675,6 +677,76 @@ three.example.com
 
             # Assert
             $result.Parent.children.GetType().BaseType.Name | Should -Be "Array"
+        }
+
+        It '[AnsibleInventory] -->  Export() : - should return one child attribute as array in json' {
+            # Arrange
+            $Instance = New-AnsibleInventory
+            $Instance.SetPath($TestDrive)
+            $Entry = New-AnsibleInventoryEntry -NodeName "Node1" -Group "Test"
+            $Hierarchyentry = New-AnsibleInventoryHierarchyEntry -Parent "Parent" -Child "Child"
+            $Instance.AddHierarchy($Hierarchyentry)
+            $Instance.AddInventoryEntry($Entry)
+            $Instance.SetOutputType("JSON")
+            $Instance.Export()
+
+            $result = Get-Content (Join-Path -Path $TestDrive -ChildPath 'inventory.json') -Raw | ConvertFrom-Json
+
+            # Assert
+            $result.Parent.children.GetType().BaseType.Name | Should -Be "Array"
+        }
+
+        It '[AnsibleInventory] -->  Export() : - should return multiple child attribute as array in json' {
+            # Arrange
+            $Instance = New-AnsibleInventory
+            $Instance.SetPath($TestDrive)
+            $Entry = New-AnsibleInventoryEntry -NodeName "Node1" -Group "Test"
+            $Hierarchyentry = New-AnsibleInventoryHierarchyEntry -Parent "Parent" -Child "Child1","Child2"
+            $Instance.AddHierarchy($Hierarchyentry)
+            $Instance.AddInventoryEntry($Entry)
+            $Instance.SetOutputType("JSON")
+            $Instance.Export()
+
+            $result = Get-Content (Join-Path -Path $TestDrive -ChildPath 'inventory.json') -Raw | ConvertFrom-Json
+
+            # Assert
+            $result.Parent.children.GetType().BaseType.Name | Should -Be "Array"
+        }
+
+        It '[AnsibleInventory] -->  Export() : - should return one Node1 and Node2 as host attribute' {
+            # Arrange
+            $Instance = New-AnsibleInventory
+            $Instance.SetPath($TestDrive)
+            $Entry = New-AnsibleInventoryEntry -NodeName "Node1" -Group "Test"
+            $Entry2 = New-AnsibleInventoryEntry -NodeName "Node2" -Group "Test"
+            $Hierarchyentry = New-AnsibleInventoryHierarchyEntry -Parent "Parent" -Child "Child"
+            $Instance.AddHierarchy($Hierarchyentry)
+            $Instance.AddInventoryEntry($Entry)
+            $Instance.AddInventoryEntry($Entry2)
+            $Instance.SetOutputType("JSON")
+            $Instance.Export()
+
+            $result = Get-Content (Join-Path -Path $TestDrive -ChildPath 'inventory.json') -Raw | ConvertFrom-Json
+
+            # Assert
+            $result.test.hosts[0].GetType().Name | Should -Be "String"
+            $result.test.hosts | Should -Contain "Node1"
+            $result.test.hosts | Should -Contain "Node2"
+        }
+
+        It '[AnsibleInventory] -->  Export() : - should return one no nodes as host attribute if none are defined' {
+            # Arrange
+            $Instance = New-AnsibleInventory
+            $Instance.SetPath($TestDrive)
+            $Hierarchyentry = New-AnsibleInventoryHierarchyEntry -Parent "Parent" -Child "Child"
+            $Instance.AddHierarchy($Hierarchyentry)
+            $Instance.SetOutputType("JSON")
+            $Instance.Export()
+
+            $result = Get-Content (Join-Path -Path $TestDrive -ChildPath 'inventory.json') -Raw | ConvertFrom-Json
+
+            # Assert
+            $result.test.hosts | Should -BeNullOrEmpty
         }
 
     }

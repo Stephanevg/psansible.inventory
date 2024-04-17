@@ -310,20 +310,24 @@ Class AnsibleInventory {
 
             foreach($Group in $this.GroupCollection.groups.name){
                 $RootHashTable.$Group = @{}
-                if(($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members -gt 0){
+                if(($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members.count -gt 0){
                     $RootHashTable.$Group.hosts = ($this.GroupCollection.Groups | ?{$_.name -eq $Group} | select members).members
                 }
                 if($this.Hierarchy.Entries.Parent -contains $Group){
-                    foreach($Hierarchyentry in $this.Hierarchy.Entries){
-                        if($null -eq $Hierarchyentry.children){
+                    foreach($Hierarchyentry in ($this.Hierarchy.Entries | ?{$_.Parent -eq $Group})){
+                        if($null -eq $RootHashTable.$($Hierarchyentry.Parent)){
                             $RootHashTable.$($Hierarchyentry.Parent) = @{}
+                        }
+                        if($Hierarchyentry.children.count -eq 0){
                             $RootHashTable.$($Hierarchyentry.Parent).children = @()
                         }else{
-                            $RootHashTable.$($Hierarchyentry.Parent).children = ($this.Hierarchy.Entries | ?{$_.Parent -eq $($Hierarchyentry.Parent)}).Children 
+                            $RootHashTable.$($Hierarchyentry.Parent).children = [System.Array]($this.Hierarchy.Entries | ?{$_.Parent -eq $($Hierarchyentry.Parent)}).Children 
                         }
                     }
                     
                     $RootHashTable.$Group.Remove("hosts")
+                }else{
+                    $RootHashTable.$Group.children = @()
                 }
             }
 
