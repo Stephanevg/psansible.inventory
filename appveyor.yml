@@ -1,6 +1,5 @@
 image:
 - Ubuntu1604
-- Visual Studio 2015
 
 install:
 - ps: >-
