@@ -1,6 +1,10 @@
 # psansible.inventory
 Ansible inventory helpers
 
+## Build Status
+
+[![Build status](https://ci.appveyor.com/api/projects/status/vl2w4727lq0qhgr7?svg=true)](https://ci.appveyor.com/project/bateskevin/psansible-inventory)
+
 ## main functionality
 
 __psansible.inventory__ simplifies the management of __static__ inventories by allowing the automation of every component that an inventory is composed of.
