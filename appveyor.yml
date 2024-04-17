@@ -14,5 +14,4 @@ test_script:
 skip_commits:
   files:
     - docs/*
-    - README.MD
     - mkdocs.yml
