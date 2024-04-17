@@ -1,7 +1,7 @@
 
 $PSVersionTable
 Write-Host "[TEST][START]" -ForegroundColor RED -BackgroundColor White
-import-module pester
+import-module pester -RequiredVersion "4.9.0"
 start-sleep -seconds 2
 
 write-output "BUILD_FOLDER: $($env:APPVEYOR_BUILD_FOLDER)"
