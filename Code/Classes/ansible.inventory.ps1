@@ -70,7 +70,7 @@ Class AnsibleInventory {
                 $GroupName = $matches[1]
             }
             ':children' { $record.HasChildren = $true }
-            '^[a-z0-9\._]+$' { 
+            '^[a-z0-9\._\-]+$' { 
                 $record.Members.Add($_)
                 if ($record.HasChildren -eq $false) {
 
